@@ -51,7 +51,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
         pass
 
     elif select == 'about':
-        await bot.delete_message(user.telegram_id, callback.message.message_id)
+        # await bot.delete_message(user.telegram_id, callback.message.message_id)
         await bot.send_photo(
             user.telegram_id,
             photo=open('logo.png', 'rb'),
@@ -60,7 +60,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
         )
 
     elif select == 'support':
-        await bot.delete_message(user.telegram_id, callback.message.message_id)
+        # await bot.delete_message(user.telegram_id, callback.message.message_id)
         await bot.send_photo(
             user.telegram_id,
             photo=open('logo.png', 'rb'),
@@ -71,7 +71,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
     elif select == 'main':
         user.state = None
         await user.save()
-        await bot.delete_message(user.telegram_id, callback.message.message_id)
+        # await bot.delete_message(user.telegram_id, callback.message.message_id)
         await bot.send_message(
             user.telegram_id,
             MAIN_MENU_MESSAGE,
@@ -81,10 +81,9 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
     elif select == 'admin_message':
         user.state = 'admin_message'
         await user.save()
-        await bot.edit_message_text(
-            ADMIN_MESSAGE,
+        await bot.send_message(
             user.telegram_id,
-            callback.message.message_id,
+            ADMIN_MESSAGE,
             reply_markup=back_to_main_menu_keyboard
         )
 
