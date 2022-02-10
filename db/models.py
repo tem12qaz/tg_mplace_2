@@ -3,7 +3,7 @@ from tortoise import fields
 from flask_security import UserMixin, RoleMixin
 
 
-class Telegram_user(Model):
+class TelegramUser(Model):
     id = fields.IntField(pk=True)
     telegram_id = fields.BigIntField(unique=True, index=True)
     username = fields.CharField(128, unique=True)
