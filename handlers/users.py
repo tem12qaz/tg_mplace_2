@@ -185,7 +185,7 @@ async def handle_photo(message: types.Message):
 
         photo = message.photo[-1]
         name = f'files/{message.from_user.id}_{photo.file_id}.jpg'
-        await photo.download(name)
+        await photo.download(destination_file=name)
 
         photo_binary = open(name, 'rb').read()
         shop.photo = photo_binary
@@ -238,7 +238,7 @@ async def admin_handler(callback: types.CallbackQuery, callback_data):
             return
         shop.active = True
         await shop.save()
-        await bot.delete_message((await shop.owner).id, callback.message.message_id)
+        await bot.delete_message((await shop.owner).telegram_id, callback.message.message_id)
 
         await bot.send_message(
             (await shop.owner).id,
@@ -250,7 +250,7 @@ async def admin_handler(callback: types.CallbackQuery, callback_data):
         if shop is None:
             return
         await shop.delete()
-        user_id = (await shop.owner).id
+        user_id = (await shop.owner).telegram_id
         await shop.save()
         await bot.delete_message(user_id, callback.message.message_id)
 
