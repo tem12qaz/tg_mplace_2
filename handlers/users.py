@@ -51,39 +51,44 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
         pass
 
     elif select == 'about':
-        # await bot.delete_message(user.telegram_id, callback.message.message_id)
         await bot.send_photo(
             user.telegram_id,
             photo=open('logo.png', 'rb'),
-            caption=ABOUT_US_MESSAGE,
-            reply_markup=back_to_main_menu_keyboard
+        )
+        await bot.send_message(
+            user.telegram_id,
+            ABOUT_US_MESSAGE,
+            reply_markup=support_keyboard
         )
 
     elif select == 'support':
-        # await bot.delete_message(user.telegram_id, callback.message.message_id)
         await bot.send_photo(
             user.telegram_id,
             photo=open('logo.png', 'rb'),
-            caption=SUPPORT_MESSAGE,
+        )
+        await bot.send_message(
+            user.telegram_id,
+            SUPPORT_MESSAGE,
             reply_markup=support_keyboard
         )
 
     elif select == 'main':
         user.state = None
         await user.save()
-        # await bot.delete_message(user.telegram_id, callback.message.message_id)
-        await bot.send_message(
-            user.telegram_id,
+        await bot.edit_message_text(
             MAIN_MENU_MESSAGE,
+            user.telegram_id,
+            callback.message.message_id,
             reply_markup=start_keyboard
         )
 
     elif select == 'admin_message':
         user.state = 'admin_message'
         await user.save()
-        await bot.send_message(
-            user.telegram_id,
+        await bot.edit_message_text(
             ADMIN_MESSAGE,
+            user.telegram_id,
+            callback.message.message_id,
             reply_markup=back_to_main_menu_keyboard
         )
 
