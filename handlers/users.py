@@ -188,6 +188,7 @@ async def handle_photo(message: types.Message):
         await photo.download(name)
 
         photo_binary = open(name, 'rb')
+        print(photo_binary)
         shop.photo = photo_binary
         await shop.save()
         os.remove(name)
