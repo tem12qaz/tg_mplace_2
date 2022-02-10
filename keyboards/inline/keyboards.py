@@ -32,10 +32,10 @@ create_type_shop_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(text=CREATE_CATALOG_SHOP_BUTTON, callback_data=seller_callback.new(
-                select='create_catalog', shop=''
+                action='create_catalog', shop=''
             )),
             InlineKeyboardButton(text=CREATE_BID_SHOP_BUTTON, callback_data=seller_callback.new(
-                select='create_bid', shop=''
+                action='create_bid', shop=''
             ))
         ],
         [
