@@ -72,9 +72,9 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
         user.state = None
         await user.save()
         await bot.edit_message_text(
-            callback.from_user.id,
-            callback.message.message_id,
             MAIN_MENU_MESSAGE,
+            user.telegram_id,
+            callback.message.message_id,
             reply_markup=start_keyboard
         )
 
@@ -82,9 +82,9 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
         user.state = 'admin_message'
         await user.save()
         await bot.edit_message_text(
-            callback.from_user.id,
-            callback.message.message_id,
             ADMIN_MESSAGE,
+            user.telegram_id,
+            callback.message.message_id,
             reply_markup=back_to_main_menu_keyboard
         )
 
