@@ -187,7 +187,7 @@ async def handle_photo(message: types.Message):
         name = f'files/{message.from_user.id}_{photo.file_id}.jpg'
         await photo.download(name)
 
-        photo_binary = open(name, 'rb')
+        photo_binary = open(name, 'rb').read()
         print('-------------------------')
         print(photo_binary)
         shop.photo = photo_binary
