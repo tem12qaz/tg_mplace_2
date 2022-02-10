@@ -58,7 +58,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
         await bot.send_message(
             user.telegram_id,
             ABOUT_US_MESSAGE,
-            reply_markup=support_keyboard
+            reply_markup=back_to_main_menu_keyboard
         )
 
     elif select == 'support':
