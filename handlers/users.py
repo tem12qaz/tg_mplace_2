@@ -136,7 +136,7 @@ async def listen_handler(message: types.Message):
         if int(user.telegram_id) != ADMIN_ID:
             return
 
-        tg_id = state.split('_')[2]
+        tg_id = state.split('_')[-1]
         await bot.send_message(
             tg_id,
             ADMIN_ANSWER_MESSAGE.format(answer=message.text)
@@ -297,7 +297,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
         )
 
     elif 'select_cat_' in action:
-        category = await Category.get_or_none(id=int(action.split('_')[2]))
+        category = await Category.get_or_none(id=int(action.split('_')[-1]))
         shop = await Shop.get_or_none(id=int(shop))
         if category is None or shop is None:
             return
@@ -329,7 +329,7 @@ async def check_creating_shop(user):
             'listen_shop_name_' in user.state or \
             'listen_shop_description_' in user.state or \
             'listen_shop_photo_' in user.state:
-        shop = await user.shops.filter(id=int(user.state.split('_')[2]))
+        shop = await user.shops.filter(id=int(user.state.split('_')[-1]))
         await shop[0].delete()
         user.state = ''
         await user.save()
