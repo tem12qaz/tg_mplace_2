@@ -7,7 +7,7 @@ class TelegramUser(Model):
     id = fields.IntField(pk=True)
     telegram_id = fields.BigIntField(unique=True, index=True)
     username = fields.CharField(128, unique=True)
-    state = fields.CharField(32, null=True)
+    state = fields.CharField(64, default='')
 
     def __str__(self):
         return str(self.telegram_id)
@@ -15,17 +15,20 @@ class TelegramUser(Model):
 
 class Shop(Model):
     id = fields.IntField(pk=True)
+    active = fields.BooleanField(default=False, index=True)
     owner = fields.ForeignKeyField('models.TelegramUser', related_name='shops', index=True)
+    category = fields.ForeignKeyField('models.Category', related_name='shops', index=True, null=True)
     name = fields.CharField(100)
     description = fields.TextField()
-    photo = fields.BinaryField()
-    catalog = fields.BooleanField(default=False)
+    photo = fields.BinaryField(null=True)
+    catalog = fields.BooleanField(default=False, index=True)
 
 
 class Product(Model):
     id = fields.IntField(pk=True)
     shop = fields.ForeignKeyField('models.Shop', related_name='products', index=True)
-    name = fields.CharField(100, index=True)
+    category = fields.ForeignKeyField('models.CategoryShop', related_name='products', index=True)
+    name = fields.CharField(100)
     description = fields.TextField()
 
 
@@ -49,6 +52,17 @@ class Review(Model):
     customer = fields.ForeignKeyField('models.TelegramUser', related_name='reviews', index=True)
     text = fields.TextField()
     rating = fields.SmallIntField()
+
+
+class Category(Model):
+    id = fields.IntField(pk=True)
+    name = fields.CharField(100)
+
+
+class CategoryShop(Model):
+    id = fields.IntField(pk=True)
+    shop = fields.ForeignKeyField('models.Shop', related_name='products', index=True)
+    name = fields.CharField(100)
 
 
 class User(Model, UserMixin):

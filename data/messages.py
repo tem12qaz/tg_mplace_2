@@ -24,3 +24,29 @@ ADMIN_READ_MESSAGE = '''Сообщение от пользователя:
 
 ADMIN_ANSWER_MESSAGE = '''Ответ от администратора:
 {answer}'''
+
+MENU_MESSAGE = 'Меню'
+
+CREATE_SHOP_TYPE_MESSAGE = '''Выберите тип магазина.
+Описание типов'''
+
+CREATE_SHOP_CATEGORY_MESSAGE = '''Выберите категорию'''
+
+INPUT_SHOP_NAME_MESSAGE = '''Введите название магазина'''
+
+INPUT_SHOP_DESCRIPTION_MESSAGE = '''Введите описание магазина'''
+
+INPUT_SHOP_PHOTO_MESSAGE = '''Отправьте логитип магазина'''
+
+SHOP_CREATED_MESSAGE = '''Магазин отправлен на модерацию'''
+
+ADMIN_CREATE_SHOP_MESSAGE = '''Модерация магазина
+Название:
+{name}
+Описание:
+{description}'''
+
+SHOP_ACTIVATED_MESSAGE = '''Ваш магазин "{name}" успешно прошел модерацию'''
+SHOP_DECLINED_MESSAGE = '''Ваш магазин "{name}" был отклонен модератором'''
+
+
