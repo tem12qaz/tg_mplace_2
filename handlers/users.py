@@ -238,7 +238,7 @@ async def admin_handler(callback: types.CallbackQuery, callback_data):
             return
         shop.active = True
         await shop.save()
-        await bot.delete_message(callback.message.message_id)
+        await bot.delete_message((await shop.owner).id, callback.message.message_id)
 
         await bot.send_message(
             (await shop.owner).id,
@@ -252,7 +252,7 @@ async def admin_handler(callback: types.CallbackQuery, callback_data):
         await shop.delete()
         user_id = (await shop.owner).id
         await shop.save()
-        await bot.delete_message(callback.message.message_id)
+        await bot.delete_message(user_id, callback.message.message_id)
 
         await bot.send_message(
             user_id,
