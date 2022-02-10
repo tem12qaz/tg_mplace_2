@@ -275,7 +275,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
     shop = callback_data.get('shop')
 
     if action == 'open_shop':
-        bot.edit_message_text(
+        await bot.edit_message_text(
             CREATE_SHOP_TYPE_MESSAGE,
             user.telegram_id,
             callback.message.message_id,
