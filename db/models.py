@@ -61,7 +61,7 @@ class Category(Model):
 
 class CategoryShop(Model):
     id = fields.IntField(pk=True)
-    shop = fields.ForeignKeyField('models.Shop', related_name='products', index=True)
+    shop = fields.ForeignKeyField('models.Shop', related_name='categories', index=True)
     name = fields.CharField(100)
 
 
