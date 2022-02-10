@@ -260,8 +260,6 @@ async def admin_handler(callback: types.CallbackQuery, callback_data):
         )
 
 
-
-
 @dp.callback_query_handler(seller_callback.filter())
 @dp.throttled(rate=FLOOD_RATE)
 async def seller_handler(callback: types.CallbackQuery, callback_data):
@@ -308,7 +306,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
         user.state = 'listen_shop_name_' + str(shop.id)
         await user.save()
 
-        bot.edit_message_text(
+        await bot.edit_message_text(
             INPUT_SHOP_NAME_MESSAGE,
             user.telegram_id,
             callback.message.message_id,
@@ -317,7 +315,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
 
     elif action == 'main':
         await check_creating_shop(user)
-        bot.edit_message_text(
+        await bot.edit_message_text(
             MENU_MESSAGE,
             user.telegram_id,
             callback.message.message_id,
