@@ -144,10 +144,10 @@ async def get_seller_categories_keyboard(shop_id):
         if i != len(categories) - 1:
             inline_keyboard.append(
                 [
-                    InlineKeyboardButton(text=BACK_BUTTON, callback_data=seller_callback.new(
+                    InlineKeyboardButton(text=categories[i].name, callback_data=seller_callback.new(
                         action=f'select_cat_{categories[i].id}', shop=str(shop_id)
                     )),
-                    InlineKeyboardButton(text=BACK_BUTTON, callback_data=seller_callback.new(
+                    InlineKeyboardButton(text=categories[i+1].name, callback_data=seller_callback.new(
                         action=f'select_cat_{categories[i+1].id}', shop=str(shop_id)
                     )),
                 ]
@@ -155,7 +155,7 @@ async def get_seller_categories_keyboard(shop_id):
         else:
             inline_keyboard.append(
                 [
-                    InlineKeyboardButton(text=BACK_BUTTON, callback_data=seller_callback.new(
+                    InlineKeyboardButton(text=categories[i].name, callback_data=seller_callback.new(
                         action=f'select_cat_{categories[i].id}', shop=str(shop_id)
                     ))
                 ]
