@@ -112,29 +112,27 @@ async def get_start_keyboard(user: TelegramUser):
 
 async def get_seller_keyboard(user):
     shops = await user.shops.filter(active=True)
-    inline_keyboard = [
+
+    shops_buttons = [
+        [InlineKeyboardButton(
+            text=shop.name, callback_data=seller_callback.new(action='info', shop=str(shop.id))
+        )] for shop in shops
+    ]
+
+    if len(shops_buttons) < 5:
+        shops_buttons.append(
+            [InlineKeyboardButton(text=OPEN_SHOP_BUTTON, callback_data=seller_callback.new(
+                action='open_shop', shop=''
+            ))]
+        )
+
+    shops_buttons.append(
         [
             InlineKeyboardButton(text=MAIN_MENU_BUTTON, callback_data=start_callback.new(select='main')),
         ]
-    ]
-    shops_buttons = [
-        InlineKeyboardButton(
-            text=shop.name, callback_data=seller_callback.new(action='info', shop=str(shop.id))
-        ) for shop in shops
-    ]
-    if shops_buttons:
-        inline_keyboard.insert(0, shops_buttons)
-        if len(shops_buttons) < 5:
-            inline_keyboard.insert(
-                1,
-                InlineKeyboardButton(
-                    text=OPEN_SHOP_BUTTON, callback_data=seller_callback.new(
-                        action='open_shop', shop=''
-                    )
-                ),
-            )
+    )
 
-    keyboard = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+    keyboard = InlineKeyboardMarkup(inline_keyboard=shops_buttons)
     return keyboard
 
 
