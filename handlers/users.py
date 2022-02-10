@@ -288,6 +288,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
             catalog=True if action == 'create_catalog' else False
         )
         user.state = 'create_shop_' + str(shop.id)
+        await user.save()
         await bot.edit_message_text(
             CREATE_SHOP_CATEGORY_MESSAGE,
             user.telegram_id,
