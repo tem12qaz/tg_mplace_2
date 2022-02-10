@@ -87,7 +87,7 @@ def get_admin_shop_keyboard(shop: Shop):
 
 
 async def get_start_keyboard(user: TelegramUser):
-    if await user.shops.all():
+    if not await user.shops.all():
         button = SELLER_BUTTON
     else:
         button = MY_SHOP_BUTTON
