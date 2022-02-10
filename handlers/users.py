@@ -131,6 +131,9 @@ async def listen_handler(message: types.Message):
             tg_id,
             ADMIN_ANSWER_MESSAGE.format(answer=message.text)
         )
+        await message.answer(
+            ADMIN_SENT_MESSAGE
+        )
 
 
 @dp.callback_query_handler(admin_callback.filter())
