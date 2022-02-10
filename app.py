@@ -1,9 +1,11 @@
 from aiogram import executor
+
+from db.db import db_init
 from handlers import dp
 
 
 async def on_startup(dp):
-    pass
+    await db_init()
 
 
 if __name__ == '__main__':
