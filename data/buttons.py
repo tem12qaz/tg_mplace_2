@@ -1,0 +1,8 @@
+ABOUT_BUTTON = 'О нас'
+SHOPS_BUTTON = 'Магазины'
+SELLER_BUTTON = 'Стать продавцом'
+SUPPORT_BUTTON = 'Поддержка'
+BACK_BUTTON = 'Назад'
+MAIN_MENU_BUTTON = 'В главное меню'
+ADMIN_MESSAGE_BUTTON = 'Связаться с администратором'
+ANSWER_BUTTON = 'Ответить'
