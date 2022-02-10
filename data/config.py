@@ -1,7 +1,7 @@
-PG_HOST = 'hattie.db.elephantsql.com'
-PG_PASSWORD = '3bRnh5lKHkYXu0JTfZ-O0LoVvyV3JtPX'
-PG_USER = 'dndcpvzp'
-PG_DATABASE = 'dndcpvzp'
+PG_HOST = 'localhost'
+PG_PASSWORD = 'pass'
+PG_USER = 'myuser'
+PG_DATABASE = 'db'
 database_uri = f'postgres://{PG_USER}:{PG_PASSWORD}@{PG_HOST}/{PG_DATABASE}'
 
 
