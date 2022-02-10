@@ -71,10 +71,10 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
     elif select == 'main':
         user.state = None
         await user.save()
-        await bot.edit_message_text(
-            MAIN_MENU_MESSAGE,
+        await bot.delete_message(user.telegram_id, callback.message.message_id)
+        await bot.send_message(
             user.telegram_id,
-            callback.message.message_id,
+            MAIN_MENU_MESSAGE,
             reply_markup=start_keyboard
         )
 
