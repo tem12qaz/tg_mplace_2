@@ -15,7 +15,7 @@ class TelegramUser(Model):
 
 class Shop(Model):
     id = fields.IntField(pk=True)
-    owner = fields.ForeignKeyField('models.Telegram_user', related_name='shops', index=True)
+    owner = fields.ForeignKeyField('models.TelegramUser', related_name='shops', index=True)
     name = fields.CharField(100)
     description = fields.TextField()
     photo = fields.BinaryField()
@@ -32,21 +32,21 @@ class Product(Model):
 class Photo(Model):
     id = fields.IntField(pk=True)
     source = fields.BinaryField()
-    product = fields.ForeignKeyField('models.Products', related_name='photos', index=True)
+    product = fields.ForeignKeyField('models.Product', related_name='photos', index=True)
 
 
 class Deal(Model):
     id = fields.IntField(pk=True)
     shop = fields.ForeignKeyField('models.Shop', related_name='deals', index=True)
-    customer = fields.ForeignKeyField('models.Telegram_user', related_name='deals', index=True)
+    customer = fields.ForeignKeyField('models.TelegramUser', related_name='deals', index=True)
     price = fields.IntField()
     state = fields.CharField(32)
 
 
 class Review(Model):
     id = fields.IntField(pk=True)
-    product = fields.ForeignKeyField('models.Products', related_name='reviews', index=True)
-    customer = fields.ForeignKeyField('models.Telegram_user', related_name='reviews', index=True)
+    product = fields.ForeignKeyField('models.Product', related_name='reviews', index=True)
+    customer = fields.ForeignKeyField('models.TelegramUser', related_name='reviews', index=True)
     text = fields.TextField()
     rating = fields.SmallIntField()
 
