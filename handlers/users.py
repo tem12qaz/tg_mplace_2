@@ -28,7 +28,7 @@ async def bot_start(message: types.Message):
         )
         return
 
-    check_creating_shop(user)
+    await check_creating_shop(user)
 
     await message.answer(
         MAIN_MENU_MESSAGE,
@@ -316,7 +316,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
         )
 
     elif action == 'main':
-        check_creating_shop(user)
+        await check_creating_shop(user)
         bot.edit_message_text(
             MENU_MESSAGE,
             user.telegram_id,
@@ -325,7 +325,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
         )
 
 
-def check_creating_shop(user):
+async def check_creating_shop(user):
     if 'create_shop_' in user.state or \
             'listen_shop_name_' in user.state or \
             'listen_shop_description_' in user.state or \
