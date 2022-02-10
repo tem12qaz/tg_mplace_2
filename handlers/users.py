@@ -53,7 +53,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
         pass
 
     elif select == 'seller':
-        bot.edit_message_text(
+        await bot.edit_message_text(
             MENU_MESSAGE,
             user.telegram_id,
             callback.message.message_id,
