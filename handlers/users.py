@@ -24,7 +24,7 @@ async def bot_start(message: types.Message):
             user.telegram_id,
             photo=open('logo.png', 'rb'),
             caption=START_MESSAGE,
-            reply_markup=get_start_keyboard(user)
+            reply_markup=await get_start_keyboard(user)
         )
         return
 
@@ -32,7 +32,7 @@ async def bot_start(message: types.Message):
 
     await message.answer(
         MAIN_MENU_MESSAGE,
-        reply_markup=get_start_keyboard(user)
+        reply_markup=await get_start_keyboard(user)
     )
 
 
@@ -57,7 +57,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
             MENU_MESSAGE,
             user.telegram_id,
             callback.message.message_id,
-            reply_markup=get_seller_keyboard(user)
+            reply_markup=await get_seller_keyboard(user)
         )
 
     elif select == 'about':
@@ -89,7 +89,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
             MAIN_MENU_MESSAGE,
             user.telegram_id,
             callback.message.message_id,
-            reply_markup=get_start_keyboard(user)
+            reply_markup=await get_start_keyboard(user)
         )
 
     elif select == 'admin_message':
@@ -294,7 +294,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
             CREATE_SHOP_CATEGORY_MESSAGE,
             user.telegram_id,
             callback.message.message_id,
-            reply_markup=get_seller_categories_keyboard(shop.id)
+            reply_markup=await get_seller_categories_keyboard(shop.id)
         )
 
     elif 'select_cat_' in action:
@@ -321,7 +321,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
             MENU_MESSAGE,
             user.telegram_id,
             callback.message.message_id,
-            reply_markup=get_seller_keyboard(user)
+            reply_markup=await get_seller_keyboard(user)
         )
 
 

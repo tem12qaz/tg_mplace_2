@@ -86,7 +86,7 @@ def get_admin_shop_keyboard(shop: Shop):
     return keyboard
 
 
-def get_start_keyboard(user: TelegramUser):
+async def get_start_keyboard(user: TelegramUser):
     if await user.shops.all():
         button = SELLER_BUTTON
     else:
@@ -110,7 +110,7 @@ def get_start_keyboard(user: TelegramUser):
     return keyboard
 
 
-def get_seller_keyboard(user):
+async def get_seller_keyboard(user):
     shops = await user.shops.filter(active=True)
     inline_keyboard = [
         [
@@ -138,7 +138,7 @@ def get_seller_keyboard(user):
     return keyboard
 
 
-def get_seller_categories_keyboard(shop_id):
+async def get_seller_categories_keyboard(shop_id):
     categories = await Category.all()
     inline_keyboard = []
 
