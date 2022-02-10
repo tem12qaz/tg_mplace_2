@@ -149,6 +149,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
 
     if action == 'answer':
         user.state = 'admin_answer_' + param
+        await user.save()
         await bot.send_message(
             callback.from_user.id,
             ADMIN_WRITE_MESSAGE
