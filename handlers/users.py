@@ -242,7 +242,7 @@ async def admin_handler(callback: types.CallbackQuery, callback_data):
 
         await bot.send_message(
             (await shop.owner).id,
-            SHOP_ACTIVATED_MESSAGE
+            SHOP_ACTIVATED_MESSAGE.format(name=shop.name)
         )
 
     elif action == 'decline':
@@ -256,7 +256,7 @@ async def admin_handler(callback: types.CallbackQuery, callback_data):
 
         await bot.send_message(
             user_id,
-            SHOP_DECLINED_MESSAGE
+            SHOP_DECLINED_MESSAGE.format(name=shop.name)
         )
 
 
