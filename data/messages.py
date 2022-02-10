@@ -40,10 +40,12 @@ INPUT_SHOP_PHOTO_MESSAGE = '''Отправьте логитип магазина
 
 SHOP_CREATED_MESSAGE = '''Магазин отправлен на модерацию'''
 
-ADMIN_CREATE_SHOP_MESSAGE = '''Модерация магазина
-Название:
+ADMIN_CREATE_SHOP_MESSAGE = '''<b>Модерация магазина</b>
+
+<b>Название:</b>
 {name}
-Описание:
+
+<b>Описание:</b>
 {description}'''
 
 SHOP_ACTIVATED_MESSAGE = '''Ваш магазин "{name}" успешно прошел модерацию'''
