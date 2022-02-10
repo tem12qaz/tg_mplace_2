@@ -1,7 +1,7 @@
 from aiogram import types
 from aiogram.dispatcher.filters import CommandStart
 
-from db.models import TelegramUser, Shop, Product, Photo, Deal, Review
+from db.models import telegramuser as TelegramUser, Shop, Product, Photo, Deal, Review
 from data.messages import *
 from loader import dp, bot
 
