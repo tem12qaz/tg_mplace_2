@@ -238,10 +238,10 @@ async def admin_handler(callback: types.CallbackQuery, callback_data):
             return
         shop.active = True
         await shop.save()
-        await bot.delete_message((await shop.owner).telegram_id, callback.message.message_id)
+        await bot.delete_message(ADMIN_ID, callback.message.message_id)
 
         await bot.send_message(
-            (await shop.owner).id,
+            (await shop.owner).telegram_id,
             SHOP_ACTIVATED_MESSAGE.format(name=shop.name)
         )
 
@@ -250,12 +250,11 @@ async def admin_handler(callback: types.CallbackQuery, callback_data):
         if shop is None:
             return
         await shop.delete()
-        user_id = (await shop.owner).telegram_id
         await shop.save()
-        await bot.delete_message(user_id, callback.message.message_id)
+        await bot.delete_message(ADMIN_ID, callback.message.message_id)
 
         await bot.send_message(
-            user_id,
+            (await shop.owner).telegram_id,
             SHOP_DECLINED_MESSAGE.format(name=shop.name)
         )
 
