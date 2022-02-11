@@ -259,9 +259,12 @@ async def listen_handler(message: types.Message):
                 user.state = ''
                 if not edit:
                     photos = await product.photos
+                    photos = [InputMediaPhoto(photo) for photo in photos]
+                    print(len(photos))
+
                     await bot.send_media_group(
                         message.from_user.id,
-                        [InputMediaPhoto(photo) for photo in photos]
+                        photos
                     )
                 message = SELLER_INFO_PRODUCT_MESSAGE.format(
                     name=product.name, description=product.description
