@@ -2,6 +2,7 @@ import os
 
 from aiogram import types
 from aiogram.dispatcher.filters import CommandStart, CommandHelp
+from aiogram.types import InputMediaPhoto
 from parse import parse
 
 from data.config import FLOOD_RATE, ADMIN_ID
@@ -260,7 +261,7 @@ async def listen_handler(message: types.Message):
                     photos = await product.photos
                     await bot.send_media_group(
                         message.from_user.id,
-                        photos
+                        [InputMediaPhoto(photo) for photo in photos]
                     )
                 message = SELLER_INFO_PRODUCT_MESSAGE.format(
                     name=product.name, description=product.description
@@ -544,7 +545,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
             photos = await product.photos
             await bot.send_media_group(
                 callback.from_user.id,
-                photos
+                [InputMediaPhoto(photo) for photo in photos]
             )
             message = SELLER_INFO_PRODUCT_MESSAGE.format(
                 name=product.name, description=product.description
