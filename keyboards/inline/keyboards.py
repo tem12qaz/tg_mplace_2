@@ -142,7 +142,7 @@ def get_seller_category_keyboard(shop: Shop, category: CategoryShop):
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text=EDIT_NAME_BUTTON, callback_data=seller_callback.new(
+                InlineKeyboardButton(text=PRODUCTS_BUTTON, callback_data=seller_callback.new(
                     action=f'products_{category.id}', shop=str(shop.id)
                 ))
             ],

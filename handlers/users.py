@@ -456,7 +456,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
             keyboard = get_seller_category_keyboard(shop, category)
 
         elif 'edit_cat_' in action:
-            user.state = 'listen_category_' + str(shop.id) + '_' + str(category.id)
+            user.state = 'listen_category_name_' + str(shop.id) + '_' + str(category.id)
             await user.save()
             message = ADD_CATEGORY_MESSAGE
             keyboard = get_go_seller_category_keyboard(shop, category)
@@ -485,7 +485,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
             user.state = f'listen_product_name_{product.id}'
             await user.save()
             message = ADD_PRODUCT_MESSAGE
-            keyboard = await get_seller_products_keyboard(shop, category)
+            keyboard = await get_go_seller_products_keyboard(shop, category)
 
         else:
             return
@@ -661,4 +661,6 @@ async def check_creating(user):
     elif 'listen_product_' in user.state and 'edit' not in user.state:
         product_id = int(user.state.split('_')[-1])
         product = await Product.get_or_none(id=product_id)
+        if product is None:
+            return
         await product.delete()

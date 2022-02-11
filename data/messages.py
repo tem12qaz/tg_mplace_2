@@ -100,7 +100,7 @@ DELETE_PHOTO_ALERT = '''Для изменения фото требуется у
 
 DELETE_PRODUCT_ALERT = '''Удаление продукта нельзя отменить'''
 
-SELLER_PRODUCTS_MESSAGE = '''<b>Товары категории "{name}"</b>'''
+SELLER_PRODUCTS_MESSAGE = '''Товары категории <b>"{name}"</b>'''
 
 ADD_PRODUCT_MESSAGE = '''Введите название продукта'''
 ADD_PRODUCT_DESCRIPTION_MESSAGE = '''Введите описание продукта'''

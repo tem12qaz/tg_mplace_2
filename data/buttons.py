@@ -21,5 +21,6 @@ EDIT_NAME_BUTTON = 'Изменить название'
 EDIT_DESCRIPTION_BUTTON = 'Изменить описание'
 EDIT_PHOTO_BUTTON = 'Изменить фото'
 ADD_PRODUCT_BUTTON = '➕ Добавить товар'
+PRODUCTS_BUTTON = 'Товары'
 
 
