@@ -46,7 +46,7 @@ async def bot_start(message: types.Message):
 
     await message.answer(
         MAIN_MENU_MESSAGE,
-        reply_markup=await test_keyboard()
+        reply_markup=test_keyboard()
     )
 
 
