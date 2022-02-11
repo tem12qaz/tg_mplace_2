@@ -335,7 +335,7 @@ async def get_seller_product_info_keyboard(product: Product, shop: Shop):
         ],
         [
             InlineKeyboardButton(text=BACK_BUTTON, callback_data=seller_callback.new(
-                action=f'select_cat_{(await product.category).id}', shop=str(shop.id)
+                action=f'shop_cat_{(await product.category).id}', shop=str(shop.id)
             ))
         ]
     ]
