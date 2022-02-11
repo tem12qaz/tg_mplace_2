@@ -256,12 +256,19 @@ async def listen_handler(message: types.Message):
             if await product.photos.all():
                 product.active = True
                 user.state = ''
+                if not edit:
+                    photos = await product.photos
+                    await bot.send_media_group(
+                        message.from_user.id,
+                        photos
+                    )
                 message = SELLER_INFO_PRODUCT_MESSAGE.format(
                     name=product.name, description=product.description
                 )
                 keyboard = await get_seller_product_info_keyboard(product, shop)
-                await product.save()
                 await user.save()
+
+        await product.save()
 
         if edit:
             user.state = ''
