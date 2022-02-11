@@ -1,3 +1,4 @@
+import io
 import os
 
 from aiogram import types
@@ -262,7 +263,7 @@ async def listen_handler(message: types.Message):
 
                     media = types.MediaGroup()
                     for photo in photos:
-                        media.attach_photo(InputFile(str(photo.source)))
+                        media.attach_photo(InputFile(io.BytesIO(photo.source)))
 
                     await bot.send_media_group(
                         message.from_user.id,
