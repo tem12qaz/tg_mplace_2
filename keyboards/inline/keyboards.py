@@ -8,7 +8,6 @@ start_callback = CallbackData("main_menu", 'select')
 admin_callback = CallbackData("admin", 'action', 'param')
 seller_callback = CallbackData("seller", 'action', 'shop')
 
-
 back_to_main_menu_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [
@@ -141,11 +140,11 @@ def get_go_seller_shop_info_keyboard(shop: Shop):
 
 def test_keyboard():
     inline_keyboard = []
-    for i in range (50):
+    for i in range(50):
         inline_keyboard.append(
             [
-                InlineKeyboardButton(text=EDIT_CATEGORY_NAME_BUTTON, callback_data=start_callback.new(
-                    select = 'f'
+                InlineKeyboardButton(text=str(i), callback_data=start_callback.new(
+                    select='f'
                 ))
             ]
         )
@@ -282,8 +281,8 @@ async def get_seller_categories_keyboard(shop_id):
                     InlineKeyboardButton(text=categories[i].name, callback_data=seller_callback.new(
                         action=f'select_cat_{categories[i].id}', shop=str(shop_id)
                     )),
-                    InlineKeyboardButton(text=categories[i+1].name, callback_data=seller_callback.new(
-                        action=f'select_cat_{categories[i+1].id}', shop=str(shop_id)
+                    InlineKeyboardButton(text=categories[i + 1].name, callback_data=seller_callback.new(
+                        action=f'select_cat_{categories[i + 1].id}', shop=str(shop_id)
                     )),
                 ]
             )
@@ -319,8 +318,8 @@ async def get_seller_shop_categories_keyboard(shop: Shop):
                     InlineKeyboardButton(text=categories[i].name, callback_data=seller_callback.new(
                         action=f'shop_cat_{categories[i].id}', shop=str(shop.id)
                     )),
-                    InlineKeyboardButton(text=categories[i+1].name, callback_data=seller_callback.new(
-                        action=f'shop_cat_{categories[i+1].id}', shop=str(shop.id)
+                    InlineKeyboardButton(text=categories[i + 1].name, callback_data=seller_callback.new(
+                        action=f'shop_cat_{categories[i + 1].id}', shop=str(shop.id)
                     )),
                 ]
             )
