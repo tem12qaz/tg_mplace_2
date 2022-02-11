@@ -184,21 +184,21 @@ async def listen_handler(message: types.Message):
         shop = await Shop.get_or_none(id=int(shop_id))
         if shop is None:
             return
-        if field == 'description':
+        if field == 'name':
             message = ADMIN_EDIT_SHOP_DESCRIPTION_MESSAGE.format(name=message.text, old_name=shop.name)
-        elif field == 'name':
-            message = ADMIN_EDIT_SHOP_NAME_MESSAGE.format(name=message.text, old_name=shop.description)
+        elif field == 'description':
+            message = ADMIN_EDIT_SHOP_NAME_MESSAGE.format(description=message.text, old_description=shop.description)
         else:
             return
 
         await bot.send_message(
             ADMIN_ID,
             message,
-            get_admin_edit_shop_keyboard(shop, field)
+            reply_markup=get_admin_edit_shop_keyboard(shop, field)
         )
         await message.answer(
             SHOP_CREATED_MESSAGE,
-            get_go_seller_shop_info_keyboard(shop)
+            reply_markup=get_go_seller_shop_info_keyboard(shop)
         )
 
     elif 'listen_category_' in user.state:
