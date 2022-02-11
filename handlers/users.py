@@ -400,9 +400,17 @@ async def admin_handler(callback: types.CallbackQuery, callback_data):
             )
         else:
             if field == 'name':
-                shop.name = parse(ADMIN_EDIT_SHOP_NAME_MESSAGE, callback.message.text)['name']
+                shop.name = parse(
+                    ADMIN_EDIT_SHOP_NAME_MESSAGE.replace('<b>', '').replace('<\b>', ''),
+                    callback.message.text
+                )['name']
+
             elif field == 'description':
-                shop.description = parse(ADMIN_EDIT_SHOP_DESCRIPTION_MESSAGE, callback.message.text)['description']
+                shop.description = parse(
+                    ADMIN_EDIT_SHOP_DESCRIPTION_MESSAGE.replace('<b>', '').replace('<\b>', ''),
+                    callback.message.text
+                )['description']
+
             elif field == 'photo':
                 photo = callback.message.photo[-1]
                 name = f'files/{callback.message.from_user.id}_{photo.file_id}.jpg'
