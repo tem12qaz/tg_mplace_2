@@ -115,6 +115,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
 @dp.message_handler()
 @dp.throttled(rate=FLOOD_RATE)
 async def listen_handler(message: types.Message):
+    message_ = message
     user = await TelegramUser.get_or_none(telegram_id=message.from_user.id)
     if user is None:
         return
@@ -200,7 +201,7 @@ async def listen_handler(message: types.Message):
             message,
             reply_markup=get_admin_edit_shop_keyboard(shop, field)
         )
-        await message.answer(
+        await message_.answer(
             SHOP_CREATED_MESSAGE,
             reply_markup=get_go_seller_shop_info_keyboard(shop)
         )
@@ -268,13 +269,13 @@ async def listen_handler(message: types.Message):
             keyboard = get_go_seller_product_keyboard(product, shop)
 
         await user.save()
-        await message.answer(
+        await message_.answer(
             message,
             reply_markup=keyboard
         )
 
     else:
-        await message.delete()
+        await message_.delete()
 
 
 @dp.message_handler(content_types=['photo'])
