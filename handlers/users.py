@@ -2,7 +2,7 @@ import os
 
 from aiogram import types
 from aiogram.dispatcher.filters import CommandStart, CommandHelp
-from aiogram.types import InputMediaPhoto, InputFile
+from aiogram.types import InputMediaPhoto
 from parse import parse
 
 from data.config import FLOOD_RATE, ADMIN_ID
@@ -262,7 +262,7 @@ async def listen_handler(message: types.Message):
 
                     media = types.MediaGroup()
                     for photo in photos:
-                        media.attach_photo(types.InputFile(photo.source))
+                        media.attach_photo(InputMediaPhoto(photo.source))
 
                     await bot.send_media_group(
                         message.from_user.id,
