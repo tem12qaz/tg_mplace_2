@@ -224,7 +224,7 @@ async def listen_handler(message: types.Message):
 
         await message.answer(
             SAVED_MESSAGE,
-            get_go_seller_categories_keyboard(shop)
+            reply_markup=get_go_seller_categories_keyboard(shop)
         )
     elif 'listen_product_' in user.state:
         edit = False
