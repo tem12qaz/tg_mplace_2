@@ -461,15 +461,15 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
             message = ADD_CATEGORY_MESSAGE
             keyboard = get_go_seller_category_keyboard(shop, category)
 
-        elif 'delete_cat_' in action:
-            await callback.answer(DELETE_CATEGORY_ALERT, show_alert=True)
-            message = DELETE_CONFIRM_MESSAGE
-            keyboard = get_seller_delete_category_keyboard(shop, category)
-
         elif 'confirm_delete_cat_' in action:
             await category.delete()
             message = DELETED_MESSAGE
             keyboard = get_go_seller_categories_keyboard(shop)
+
+        elif 'delete_cat_' in action:
+            await callback.answer(DELETE_CATEGORY_ALERT, show_alert=True)
+            message = DELETE_CONFIRM_MESSAGE
+            keyboard = get_seller_delete_category_keyboard(shop, category)
 
         elif 'products_' in action:
             await check_creating(user)
