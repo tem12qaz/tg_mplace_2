@@ -206,8 +206,8 @@ async def listen_handler(message: types.Message):
             reply_markup=get_go_seller_shop_info_keyboard(shop)
         )
 
-    elif 'listen_category_' in user.state:
-        category_id, shop_id = user.state.replace('listen_category_', '').split('_')
+    elif 'listen_category_name_' in user.state:
+        category_id, shop_id = user.state.replace('listen_category_name_', '').split('_')
         shop = await Shop.get_or_none(id=int(shop_id))
         if shop is None:
             return
