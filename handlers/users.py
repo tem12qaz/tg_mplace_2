@@ -400,6 +400,7 @@ async def admin_handler(callback: types.CallbackQuery, callback_data):
             )
         else:
             if field == 'name':
+                print(callback.message.text)
                 shop.name = parse(
                     ADMIN_EDIT_SHOP_NAME_MESSAGE.replace('<b>', '').replace('<\b>', ''),
                     callback.message.text
