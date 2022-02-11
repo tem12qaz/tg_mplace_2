@@ -485,7 +485,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
             user.state = f'listen_product_name_{product.id}'
             await user.save()
             message = ADD_PRODUCT_MESSAGE
-            keyboard = await get_go_seller_products_keyboard(shop, category)
+            keyboard = get_go_seller_products_keyboard(shop, category)
 
         else:
             return
