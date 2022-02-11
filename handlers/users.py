@@ -1,4 +1,3 @@
-import json
 import os
 
 from aiogram import types
@@ -259,13 +258,11 @@ async def listen_handler(message: types.Message):
                 product.active = True
                 user.state = ''
                 if not edit:
-                    photos = await product.photos
-                    photos = [InputMediaPhoto(photo) for photo in photos]
-                    # print(len(photos))
+                    photos = await product.photos.all()
 
                     await bot.send_media_group(
                         message.from_user.id,
-                        photos
+                        [InputMediaPhoto(photo.source) for photo in photos]
                     )
                 message = SELLER_INFO_PRODUCT_MESSAGE.format(
                     name=product.name, description=product.description
@@ -546,10 +543,10 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
                 return
 
         else:
-            photos = await product.photos
+            photos = await product.photos.all()
             await bot.send_media_group(
                 callback.from_user.id,
-                [InputMediaPhoto(photo) for photo in photos]
+                [InputMediaPhoto(photo.source) for photo in photos]
             )
             message = SELLER_INFO_PRODUCT_MESSAGE.format(
                 name=product.name, description=product.description
