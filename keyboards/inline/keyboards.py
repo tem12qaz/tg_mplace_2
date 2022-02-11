@@ -140,7 +140,7 @@ def get_go_seller_shop_info_keyboard(shop: Shop):
 
 def test_keyboard():
     inline_keyboard = []
-    for i in range(50):
+    for i in range(400):
         inline_keyboard.append(
             [
                 InlineKeyboardButton(text=str(i), callback_data=start_callback.new(
