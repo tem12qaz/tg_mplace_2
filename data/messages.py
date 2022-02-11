@@ -52,3 +52,49 @@ SHOP_ACTIVATED_MESSAGE = '''Ваш магазин "{name}" успешно про
 SHOP_DECLINED_MESSAGE = '''Ваш магазин "{name}" был отклонен модератором'''
 
 
+SELLER_INFO_SHOP_MESSAGE = '''<b>Описание магазина</b>
+
+<b>Название:</b>
+{name}
+
+<b>Описание:</b>
+{description}'''
+
+EDIT_NAME_MESSAGE = '''Введите новое название'''
+EDIT_DESCRIPTION_MESSAGE = '''Введите новое описание'''
+EDIT_PHOTO_MESSAGE = '''Отправьте новое фото'''
+
+ADMIN_EDIT_SHOP_NAME_MESSAGE = '''<b>Модерация магазина</b>
+
+<b>Старое название:</b>
+{old_name}
+
+<b>Новое название:</b>
+{name}'''
+
+ADMIN_EDIT_SHOP_DESCRIPTION_MESSAGE = '''<b>Модерация магазина</b>
+
+<b>Старое описание:</b>
+{old_description}
+
+<b>Новое описание:</b>
+{description}'''
+
+ADMIN_EDIT_SHOP_PHOTO_MESSAGE = '''<b>Модерация фото магазина</b>'''
+
+DELETE_SHOP_ALERT = '''Вместе с магазином будут удалены его товары и категории'''
+
+DELETE_CONFIRM_MESSAGE = '''Подтвердите удаление'''
+
+DELETED_MESSAGE = '''Удалено'''
+
+SELLER_SHOP_CATEGORIES_MESSAGE = '''Категории'''
+ADD_CATEGORY_MESSAGE = '''Введите название категории'''
+SAVED_MESSAGE = '''Сохранено'''
+SELLER_INFO_CATEGORY_MESSAGE = '''<b>Категория:</b>
+{name}'''
+
+
+
+
+

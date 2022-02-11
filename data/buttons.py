@@ -13,3 +13,8 @@ CREATE_CATALOG_SHOP_BUTTON = 'Каталожный'
 CREATE_BID_SHOP_BUTTON = 'По заявкам'
 APPLY_BUTTON = 'Принять'
 DECLINE_BUTTON = 'Отклонить'
+DELETE_BUTTON = 'Удалить магазин'
+ADD_CATEGORY_BUTTON = '➕ Добавить категорию'
+DELETE_CATEGORY_BUTTON = 'Удалить категорию'
+EDIT_CATEGORY_NAME_BUTTON = 'Изменить название'
+

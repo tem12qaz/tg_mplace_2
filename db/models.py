@@ -59,6 +59,11 @@ class Category(Model):
     name = fields.CharField(100)
 
 
+class ServiceCategory(Model):
+    id = fields.IntField(pk=True)
+    name = fields.CharField(100)
+
+
 class CategoryShop(Model):
     id = fields.IntField(pk=True)
     shop = fields.ForeignKeyField('models.Shop', related_name='categories', index=True)
