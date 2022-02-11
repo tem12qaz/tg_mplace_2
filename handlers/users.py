@@ -178,7 +178,7 @@ async def listen_handler(message: types.Message):
         )
 
     elif 'change_shop_' in user.state:
-        shop_id, field = user.state.replace('change_shop_', '').split('_')
+        field, shop_id = user.state.replace('change_shop_', '').split('_')
         shop = await Shop.get_or_none(id=int(shop_id))
         if shop is None:
             return
@@ -573,15 +573,15 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
         await callback.answer()
 
         if action == 'change_shop_name':
-            user.state = 'change_shop_' + str(shop.id) + 'name'
+            user.state = 'change_shop_' + str(shop.id) + '_' + 'name'
             message = EDIT_NAME_MESSAGE
 
         elif action == 'change_shop_description':
-            user.state = 'change_shop_' + str(shop.id) + 'description'
+            user.state = 'change_shop_' + str(shop.id) + '_' + 'description'
             message = EDIT_DESCRIPTION_MESSAGE
 
         elif action == 'change_shop_photo':
-            user.state = 'change_shop_photo_' + str(shop.id)
+            user.state = 'change_shop_photo_' + '_' + str(shop.id)
             message = EDIT_PHOTO_MESSAGE
 
         else:
