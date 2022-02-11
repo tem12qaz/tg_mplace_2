@@ -26,7 +26,7 @@ class Shop(Model):
 
 class Product(Model):
     id = fields.IntField(pk=True)
-    shop = fields.ForeignKeyField('models.Shop', related_name='products', index=True)
+    active = fields.BooleanField(default=False)
     category = fields.ForeignKeyField('models.CategoryShop', related_name='products', index=True)
     name = fields.CharField(100)
     description = fields.TextField()

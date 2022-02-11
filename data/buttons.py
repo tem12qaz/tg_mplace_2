@@ -16,5 +16,9 @@ DECLINE_BUTTON = 'Отклонить'
 DELETE_BUTTON = 'Удалить магазин'
 ADD_CATEGORY_BUTTON = '➕ Добавить категорию'
 DELETE_CATEGORY_BUTTON = 'Удалить категорию'
-EDIT_CATEGORY_NAME_BUTTON = 'Изменить название'
+EDIT_NAME_BUTTON = 'Изменить название'
+EDIT_DESCRIPTION_BUTTON = 'Изменить описание'
+EDIT_PHOTO_BUTTON = 'Изменить фото'
+ADD_PRODUCT_BUTTON = '➕ Добавить товар'
+
 

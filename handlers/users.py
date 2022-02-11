@@ -12,7 +12,9 @@ from keyboards.inline.keyboards import start_callback, back_to_main_menu_keyboar
     create_type_shop_keyboard, get_seller_categories_keyboard, seller_main_menu_keyboard, get_admin_shop_keyboard, \
     get_seller_shop_info_keyboard, get_go_seller_shop_info_keyboard, get_admin_edit_shop_keyboard, \
     get_seller_shop_delete_keyboard, get_seller_shop_categories_keyboard, get_go_seller_categories_keyboard, \
-    get_seller_category_keyboard, test_keyboard
+    get_seller_category_keyboard, get_go_seller_category_keyboard, get_seller_delete_category_keyboard, \
+    get_seller_products_keyboard, get_go_seller_products_keyboard, get_go_seller_product_keyboard, \
+    get_seller_product_info_keyboard, get_seller_add_photo_product_keyboard, get_delete_product_keyboard
 from loader import dp, bot
 
 
@@ -32,23 +34,12 @@ async def bot_start(message: types.Message):
         )
         return
 
-    await check_creating_shop(user)
+    await check_creating(user)
 
     await message.answer(
         MAIN_MENU_MESSAGE,
         reply_markup=await get_start_keyboard(user)
     )
-
-
-@dp.message_handler(CommandHelp())
-@dp.throttled(rate=FLOOD_RATE)
-async def bot_start(message: types.Message):
-
-    await message.answer(
-        MAIN_MENU_MESSAGE,
-        reply_markup=test_keyboard()
-    )
-
 
 
 @dp.callback_query_handler(start_callback.filter())
@@ -228,6 +219,54 @@ async def listen_handler(message: types.Message):
             SAVED_MESSAGE,
             get_go_seller_categories_keyboard(shop)
         )
+    elif 'listen_product_' in user.state:
+        edit = False
+        if 'edit' in user.state:
+            user.state = user.state.replace('edit', '')
+            edit = True
+
+        field, product_id = user.state.replace('listen_product_', '').split('_')
+        product = await Product.get_or_none(id=product_id)
+
+        if product is None:
+            return
+
+        category = await product.category
+        shop = await category.shop
+        keyboard = get_go_seller_products_keyboard(shop, category)
+
+        if field == 'name':
+            user.state = 'listen_product_description_' + str(product_id)
+            product.name = message.text
+            message = ADD_PRODUCT_DESCRIPTION_MESSAGE
+
+        elif field == 'description':
+            user.state = 'listen_product_photo_' + str(product_id)
+            product.description = message.text
+            message = ADD_PRODUCT_PHOTO_MESSAGE
+
+        elif field == 'photo':
+            if await product.photos.all():
+                product.active = True
+                user.state = ''
+                message = SELLER_INFO_PRODUCT_MESSAGE.format(
+                    name=product.name, description=product.description
+                )
+                keyboard = await get_seller_product_info_keyboard(product, shop)
+                await product.save()
+                await user.save()
+
+        if edit:
+            user.state = ''
+            message = SAVED_MESSAGE
+            keyboard = get_go_seller_product_keyboard(product, shop)
+
+        await user.save()
+        await message.answer(
+            message,
+            reply_markup=keyboard
+        )
+
     else:
         await message.delete()
 
@@ -269,6 +308,7 @@ async def handle_photo(message: types.Message):
             ),
             reply_markup=get_admin_shop_keyboard(shop)
         )
+
     elif 'change_shop_photo_' in user.state:
         shop = await Shop.get_or_none(id=int(user.state.replace('change_shop_photo_', '')))
         if shop is None:
@@ -285,6 +325,14 @@ async def handle_photo(message: types.Message):
             caption=ADMIN_EDIT_SHOP_PHOTO_MESSAGE,
             reply_markup=get_admin_edit_shop_keyboard(shop, 'photo')
         )
+
+    elif 'listen_product_photo_' in user.state:
+        product = await Product.get_or_none(id=user.state.split('_')[-1])
+        if product is None:
+            return
+
+        if len(await product.photos.all()) < 3:
+            await Photo.create(source=photo_binary, product=product)
 
     else:
         await message.delete()
@@ -380,7 +428,103 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
         if shop is None:
             return
 
-    if action == 'open_shop':
+    if 'shop_cat_' in action or 'edit_cat_' in action or\
+            'delete_cat_' in action or 'new_product_' in action or 'products_' in action:
+        category = await CategoryShop.get_or_none(id=int(action.split('_')[-1]))
+
+        if category is None:
+            return
+
+        elif 'shop_cat_' in action:
+            await check_creating(user)
+            message = SELLER_INFO_CATEGORY_MESSAGE.format(name=category.name)
+            keyboard = get_seller_category_keyboard(shop, category)
+
+        elif 'edit_cat_' in action:
+            user.state = 'listen_category_' + str(shop.id) + '_' + str(category.id)
+            await user.save()
+            message = ADD_CATEGORY_MESSAGE
+            keyboard = get_go_seller_category_keyboard(shop, category)
+
+        elif 'delete_cat_' in action:
+            await callback.answer(DELETE_CATEGORY_ALERT, show_alert=True)
+            message = DELETE_CONFIRM_MESSAGE
+            keyboard = get_seller_delete_category_keyboard(shop, category)
+
+        elif 'confirm_delete_cat_' in action:
+            await category.delete()
+            message = DELETED_MESSAGE
+            keyboard = get_go_seller_categories_keyboard(shop)
+
+        elif 'products_' in action:
+            await check_creating(user)
+            message = SELLER_PRODUCTS_MESSAGE.format(name=category.name)
+            keyboard = await get_seller_products_keyboard(shop, category)
+
+        elif 'new_product_' in action:
+            product = await Product.create(
+                category=category,
+                name='',
+                description=''
+            )
+            user.state = f'listen_product_name_{product.id}'
+            await user.save()
+            message = ADD_PRODUCT_MESSAGE
+            keyboard = await get_seller_products_keyboard(shop, category)
+
+        else:
+            return
+
+    elif 'product_' in action:
+        product = await Product.get_or_none(id=int(user.state.split('_')[-1]))
+        if product is None:
+            return
+
+        if '_product_' in action:
+            field, _, product_id = user.state.split('_')
+            user.state = f'edit_listen_product_{field}_{product_id}'
+            await user.save()
+
+            keyboard = get_go_seller_product_keyboard(product, shop)
+
+            if field == 'name':
+                message = ADD_PRODUCT_MESSAGE
+
+            elif field == 'description':
+                message = ADD_PRODUCT_DESCRIPTION_MESSAGE
+
+            elif field == 'photo':
+                await callback.answer(DELETE_PHOTO_ALERT, show_alert=True)
+                message = DELETE_CONFIRM_MESSAGE
+                keyboard = get_seller_add_photo_product_keyboard(product, shop)
+
+            elif field == 'deletephoto':
+                photos = await product.photos.all()
+                for photo in photos:
+                    await photo.delete()
+                message = ADD_PRODUCT_PHOTO_MESSAGE
+
+            elif field == 'delete':
+                await callback.answer(DELETE_PRODUCT_ALERT, show_alert=True)
+                message = DELETE_CONFIRM_MESSAGE
+                keyboard = get_delete_product_keyboard(product, shop)
+
+            elif field == 'confirmdelete':
+                category = await product.category
+                await product.delete()
+                message = DELETED_MESSAGE
+                keyboard = get_go_seller_products_keyboard(shop, category)
+
+            else:
+                return
+
+        else:
+            message = SELLER_INFO_PRODUCT_MESSAGE.format(
+                name=product.name, description=product.description
+            )
+            keyboard = await get_seller_product_info_keyboard(product, shop)
+
+    elif action == 'open_shop':
         message = CREATE_SHOP_TYPE_MESSAGE
         keyboard = create_type_shop_keyboard
 
@@ -394,16 +538,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
         message = ADD_CATEGORY_MESSAGE
         keyboard = await get_go_seller_shop_info_keyboard(shop)
 
-    elif 'shop_cat_' in action:
-        category = await CategoryShop.get_or_none(id=int(action.replace('shop_cat_')))
-        if category is None:
-            return
-        message = SELLER_INFO_CATEGORY_MESSAGE
-        keyboard = get_seller_category_keyboard(shop, category)
-
     elif action == 'delete':
-        await callback.answer()
-
         await callback.answer(
             DELETE_SHOP_ALERT,
             show_alert=True
@@ -412,7 +547,6 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
         keyboard = get_seller_shop_delete_keyboard(shop)
 
     elif action == 'delete_confirm':
-        await callback.answer()
         await shop.delete()
         message = DELETED_MESSAGE
         keyboard = seller_main_menu_keyboard
@@ -457,7 +591,6 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
         keyboard = await get_go_seller_shop_info_keyboard(shop)
 
     elif action == 'create_catalog' or action == 'create_bid':
-        await callback.answer()
         shop = await Shop.create(
             owner=user,
             name='',
@@ -470,7 +603,6 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
         keyboard = await get_seller_categories_keyboard(shop.id)
 
     elif 'select_cat_' in action:
-        await callback.answer()
         category = await Category.get_or_none(id=int(action.split('_')[-1]))
         if category is None:
             return
@@ -483,13 +615,14 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
         keyboard = seller_main_menu_keyboard
 
     elif action == 'main':
-        await callback.answer()
-        await check_creating_shop(user)
+        await check_creating(user)
         message = MENU_MESSAGE
         keyboard = await get_seller_keyboard(user)
+
     else:
         return
 
+    await callback.answer()
     await bot.edit_message_text(
         message,
         user.telegram_id,
@@ -498,12 +631,19 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
     )
 
 
-async def check_creating_shop(user):
+async def check_creating(user):
     if 'create_shop_' in user.state or \
             'listen_shop_name_' in user.state or \
             'listen_shop_description_' in user.state or \
             'listen_shop_photo_' in user.state:
-        shop = await user.shops.filter(id=int(user.state.split('_')[-1]))
-        await shop[0].delete()
+        shop = await Shop.get_or_none(id=int(user.state.split('_')[-1]))
+        if shop is None:
+            return
+        await shop.delete()
         user.state = ''
         await user.save()
+
+    elif 'listen_product_' in user.state and 'edit' not in user.state:
+        product_id = int(user.state.split('_')[-1])
+        product = await Product.get_or_none(id=product_id)
+        await product.delete()

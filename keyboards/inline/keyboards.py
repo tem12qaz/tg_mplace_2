@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.callback_data import CallbackData
 
 from data.buttons import *
-from db.models import TelegramUser, Category, Shop, CategoryShop
+from db.models import TelegramUser, Category, Shop, CategoryShop, Product
 
 start_callback = CallbackData("main_menu", 'select')
 admin_callback = CallbackData("admin", 'action', 'param')
@@ -138,25 +138,16 @@ def get_go_seller_shop_info_keyboard(shop: Shop):
     return keyboard
 
 
-def test_keyboard():
-    inline_keyboard = []
-    for i in range(400):
-        inline_keyboard.append(
-            [
-                InlineKeyboardButton(text=str(i), callback_data=start_callback.new(
-                    select='f'
-                ))
-            ]
-        )
-    keyboard = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
-    return keyboard
-
-
 def get_seller_category_keyboard(shop: Shop, category: CategoryShop):
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text=EDIT_CATEGORY_NAME_BUTTON, callback_data=seller_callback.new(
+                InlineKeyboardButton(text=EDIT_NAME_BUTTON, callback_data=seller_callback.new(
+                    action=f'products_{category.id}', shop=str(shop.id)
+                ))
+            ],
+            [
+                InlineKeyboardButton(text=EDIT_NAME_BUTTON, callback_data=seller_callback.new(
                     action=f'edit_cat_{category.id}', shop=str(shop.id)
                 ))
             ],
@@ -175,12 +166,95 @@ def get_seller_category_keyboard(shop: Shop, category: CategoryShop):
     return keyboard
 
 
+def get_seller_delete_category_keyboard(shop: Shop, category: CategoryShop):
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=DELETE_BUTTON, callback_data=seller_callback.new(
+                    action=f'confirm_delete_{category.id}', shop=str(shop.id)
+                ))
+            ]
+        ]
+    )
+    return keyboard
+
+
+def get_go_seller_category_keyboard(shop: Shop, category: CategoryShop):
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=BACK_BUTTON, callback_data=seller_callback.new(
+                    action=f'shop_cat_{category.id}', shop=str(shop.id)
+                ))
+            ]
+        ]
+    )
+    return keyboard
+
+
 def get_go_seller_categories_keyboard(shop: Shop):
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(text=BACK_BUTTON, callback_data=seller_callback.new(
                     action='categories', shop=str(shop.id)
+                ))
+            ]
+        ]
+    )
+    return keyboard
+
+
+def get_go_seller_products_keyboard(shop: Shop, category: CategoryShop):
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=BACK_BUTTON, callback_data=seller_callback.new(
+                    action=f'products_{category.id}', shop=str(shop.id)
+                ))
+            ]
+        ]
+    )
+    return keyboard
+
+
+def get_go_seller_product_keyboard(product: Product, shop: Shop):
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=BACK_BUTTON, callback_data=seller_callback.new(
+                    action=f'product_{product.id}', shop=str(shop.id)
+                ))
+            ]
+        ]
+    )
+    return keyboard
+
+
+def get_delete_product_keyboard(product: Product, shop: Shop):
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=DELETE_BUTTON, callback_data=seller_callback.new(
+                    action=f'confirmdelete_product_{product.id}', shop=str(shop.id)
+                ))
+            ],
+            [
+                InlineKeyboardButton(text=BACK_BUTTON, callback_data=seller_callback.new(
+                    action=f'product_{product.id}', shop=str(shop.id)
+                ))
+            ]
+        ]
+    )
+    return keyboard
+
+
+def get_seller_add_photo_product_keyboard(product: Product, shop: Shop):
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=DELETE_BUTTON, callback_data=seller_callback.new(
+                    action=f'deletephoto_product_{product.id}', shop=str(shop.id)
                 ))
             ]
         ]
@@ -209,13 +283,13 @@ def get_seller_shop_delete_keyboard(shop: Shop):
 def get_seller_shop_info_keyboard(shop: Shop):
     inline_keyboard = [
         [
-            InlineKeyboardButton(text=APPLY_BUTTON, callback_data=seller_callback.new(
+            InlineKeyboardButton(text=EDIT_NAME_BUTTON, callback_data=seller_callback.new(
                 action='change_shop_name', shop=str(shop.id)
             )),
-            InlineKeyboardButton(text=DECLINE_BUTTON, callback_data=admin_callback.new(
+            InlineKeyboardButton(text=EDIT_DESCRIPTION_BUTTON, callback_data=admin_callback.new(
                 action='change_shop_description', shop=str(shop.id)
             )),
-            InlineKeyboardButton(text=DECLINE_BUTTON, callback_data=admin_callback.new(
+            InlineKeyboardButton(text=EDIT_PHOTO_BUTTON, callback_data=admin_callback.new(
                 action='change_shop_photo', shop=str(shop.id)
             )),
         ],
@@ -233,9 +307,41 @@ def get_seller_shop_info_keyboard(shop: Shop):
 
     if shop.catalog:
         inline_keyboard.insert(0, [
-            InlineKeyboardButton(text=APPLY_BUTTON, callback_data=seller_callback.new(
-                action='products', shop=str(shop.id)
+            InlineKeyboardButton(text=DECLINE_BUTTON, callback_data=admin_callback.new(
+                action='categories', shop=str(shop.id)
             )),
+        ])
+    keyboard = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+    return keyboard
+
+
+async def get_seller_product_info_keyboard(product: Product, shop: Shop):
+    inline_keyboard = [
+        [
+            InlineKeyboardButton(text=EDIT_NAME_BUTTON, callback_data=seller_callback.new(
+                action=f'name_product_{product.id}', shop=str(shop.id)
+            )),
+            InlineKeyboardButton(text=EDIT_DESCRIPTION_BUTTON, callback_data=admin_callback.new(
+                action=f'description_product_{product.id}', shop=str(shop.id)
+            )),
+            InlineKeyboardButton(text=EDIT_PHOTO_BUTTON, callback_data=admin_callback.new(
+                action=f'photo_product_{product.id}', shop=str(shop.id)
+            )),
+        ],
+        [
+            InlineKeyboardButton(text=DELETE_BUTTON, callback_data=seller_callback.new(
+                action=f'delete_product_{product.id}', shop=str(shop.id)
+            ))
+        ],
+        [
+            InlineKeyboardButton(text=BACK_BUTTON, callback_data=seller_callback.new(
+                action=f'select_cat_{(await product.category).id}', shop=str(shop.id)
+            ))
+        ]
+    ]
+
+    if shop.catalog:
+        inline_keyboard.insert(0, [
             InlineKeyboardButton(text=DECLINE_BUTTON, callback_data=admin_callback.new(
                 action='categories', shop=str(shop.id)
             )),
@@ -267,6 +373,37 @@ async def get_seller_keyboard(user):
     )
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=shops_buttons)
+    return keyboard
+
+
+async def get_seller_products_keyboard(shop: Shop, category: CategoryShop):
+    products = await category.products.filter(active=True)
+    inline_keyboard = []
+    for product in products:
+        inline_keyboard.append(
+            [
+                InlineKeyboardButton(text=product.name, callback_data=seller_callback.new(
+                    action=f'product_{product.id}', shop=str(shop.id)),
+                                     )
+            ]
+        )
+
+    if len(products) < 99:
+        inline_keyboard.append(
+            [InlineKeyboardButton(text=ADD_PRODUCT_BUTTON, callback_data=seller_callback.new(
+                action=f'new_product_{category.id}', shop=str(shop.id)
+            ))]
+        )
+
+    inline_keyboard.append(
+        [
+            InlineKeyboardButton(text=BACK_BUTTON, callback_data=seller_callback.new(
+                action=f'shop_cat_{category.id}', shop=str(shop.id)
+            ))
+        ]
+    )
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
     return keyboard
 
 
@@ -332,7 +469,7 @@ async def get_seller_shop_categories_keyboard(shop: Shop):
                 ]
             )
 
-    if len(categories) > 30:
+    if len(categories) < 100:
         inline_keyboard.append(
             [
                 InlineKeyboardButton(text=ADD_CATEGORY_BUTTON, callback_data=seller_callback.new(
