@@ -207,7 +207,7 @@ async def listen_handler(message: types.Message):
         )
 
     elif 'listen_category_name_' in user.state:
-        category_id, shop_id = user.state.replace('listen_category_name_', '').split('_')
+        shop_id, category_id = user.state.replace('listen_category_name_', '').split('_')
         shop = await Shop.get_or_none(id=int(shop_id))
         if shop is None:
             return
@@ -548,7 +548,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
         keyboard = await get_seller_shop_categories_keyboard(shop)
 
     elif action == 'add_cat':
-        user.state = 'listen_category_name_' + str(shop.id)
+        user.state = 'listen_category_name_' + str(shop.id) + '_'
         await user.save()
         message = ADD_CATEGORY_MESSAGE
         keyboard = get_go_seller_shop_info_keyboard(shop)
