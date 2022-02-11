@@ -171,7 +171,7 @@ def get_seller_delete_category_keyboard(shop: Shop, category: CategoryShop):
         inline_keyboard=[
             [
                 InlineKeyboardButton(text=DELETE_BUTTON, callback_data=seller_callback.new(
-                    action=f'confirm_delete_{category.id}', shop=str(shop.id)
+                    action=f'confirm_delete_cat_{category.id}', shop=str(shop.id)
                 ))
             ]
         ]
