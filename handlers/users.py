@@ -534,6 +534,11 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
                 return
 
         else:
+            photos = await product.photos
+            await bot.send_media_group(
+                callback.from_user.id,
+                photos
+            )
             message = SELLER_INFO_PRODUCT_MESSAGE.format(
                 name=product.name, description=product.description
             )
