@@ -260,7 +260,7 @@ async def listen_handler(message: types.Message):
                 user.state = ''
                 if not edit:
                     photos = await product.photos
-                    photos = json.dumps([InputMediaPhoto(photo) for photo in photos])
+                    photos = [[InputMediaPhoto(photo)] for photo in photos]
                     # print(len(photos))
 
                     await bot.send_media_group(
