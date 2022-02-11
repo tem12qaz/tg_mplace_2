@@ -286,10 +286,10 @@ def get_seller_shop_info_keyboard(shop: Shop):
             InlineKeyboardButton(text=EDIT_NAME_BUTTON, callback_data=seller_callback.new(
                 action='change_shop_name', shop=str(shop.id)
             )),
-            InlineKeyboardButton(text=EDIT_DESCRIPTION_BUTTON, callback_data=admin_callback.new(
+            InlineKeyboardButton(text=EDIT_DESCRIPTION_BUTTON, callback_data=seller_callback.new(
                 action='change_shop_description', shop=str(shop.id)
             )),
-            InlineKeyboardButton(text=EDIT_PHOTO_BUTTON, callback_data=admin_callback.new(
+            InlineKeyboardButton(text=EDIT_PHOTO_BUTTON, callback_data=seller_callback.new(
                 action='change_shop_photo', shop=str(shop.id)
             )),
         ],
@@ -307,7 +307,7 @@ def get_seller_shop_info_keyboard(shop: Shop):
 
     if shop.catalog:
         inline_keyboard.insert(0, [
-            InlineKeyboardButton(text=DECLINE_BUTTON, callback_data=admin_callback.new(
+            InlineKeyboardButton(text=CATEGORIES_BUTTON, callback_data=seller_callback.new(
                 action='categories', shop=str(shop.id)
             )),
         ])
@@ -321,10 +321,10 @@ async def get_seller_product_info_keyboard(product: Product, shop: Shop):
             InlineKeyboardButton(text=EDIT_NAME_BUTTON, callback_data=seller_callback.new(
                 action=f'name_product_{product.id}', shop=str(shop.id)
             )),
-            InlineKeyboardButton(text=EDIT_DESCRIPTION_BUTTON, callback_data=admin_callback.new(
+            InlineKeyboardButton(text=EDIT_DESCRIPTION_BUTTON, callback_data=seller_callback.new(
                 action=f'description_product_{product.id}', shop=str(shop.id)
             )),
-            InlineKeyboardButton(text=EDIT_PHOTO_BUTTON, callback_data=admin_callback.new(
+            InlineKeyboardButton(text=EDIT_PHOTO_BUTTON, callback_data=seller_callback.new(
                 action=f'photo_product_{product.id}', shop=str(shop.id)
             )),
         ],
@@ -339,13 +339,6 @@ async def get_seller_product_info_keyboard(product: Product, shop: Shop):
             ))
         ]
     ]
-
-    if shop.catalog:
-        inline_keyboard.insert(0, [
-            InlineKeyboardButton(text=DECLINE_BUTTON, callback_data=admin_callback.new(
-                action='categories', shop=str(shop.id)
-            )),
-        ])
     keyboard = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
     return keyboard
 
