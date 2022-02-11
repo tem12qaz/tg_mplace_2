@@ -207,7 +207,7 @@ async def listen_handler(message: types.Message):
         )
 
     elif 'listen_category_' in user.state:
-        category_id, shop_id = user.state.replace('listen_category_').split('_')
+        category_id, shop_id = user.state.replace('listen_category_', '').split('_')
         shop = await Shop.get_or_none(id=int(shop_id))
         if shop is None:
             return
