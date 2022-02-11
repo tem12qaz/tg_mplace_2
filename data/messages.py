@@ -52,7 +52,7 @@ SHOP_ACTIVATED_MESSAGE = '''Ваш магазин "{name}" успешно про
 SHOP_DECLINED_MESSAGE = '''Ваш магазин "{name}" был отклонен модератором'''
 
 
-SELLER_INFO_SHOP_MESSAGE = '''<bВаш магазин</b>
+SELLER_INFO_SHOP_MESSAGE = '''<b>Ваш магазин</b>
 
 <b>Название:</b>
 {name}
@@ -106,7 +106,7 @@ ADD_PRODUCT_MESSAGE = '''Введите название продукта'''
 ADD_PRODUCT_DESCRIPTION_MESSAGE = '''Введите описание продукта'''
 ADD_PRODUCT_PHOTO_MESSAGE = '''Отправте до 3 фотографий продукта, после этого напишите любое сообщение'''
 
-SELLER_INFO_PRODUCT_MESSAGE = '''<bВаш товар</b>
+SELLER_INFO_PRODUCT_MESSAGE = '''<b>Ваш товар</b>
 
 <b>Название:</b>
 {name}
