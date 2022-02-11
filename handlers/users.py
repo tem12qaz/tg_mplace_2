@@ -536,7 +536,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
         user.state = 'listen_category_name_' + str(shop.id)
         await user.save()
         message = ADD_CATEGORY_MESSAGE
-        keyboard = await get_go_seller_shop_info_keyboard(shop)
+        keyboard = get_go_seller_shop_info_keyboard(shop)
 
     elif action == 'delete':
         await callback.answer(
@@ -588,7 +588,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
             return
 
         await user.save()
-        keyboard = await get_go_seller_shop_info_keyboard(shop)
+        keyboard = get_go_seller_shop_info_keyboard(shop)
 
     elif action == 'create_catalog' or action == 'create_bid':
         shop = await Shop.create(
