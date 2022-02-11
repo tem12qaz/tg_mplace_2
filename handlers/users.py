@@ -185,9 +185,13 @@ async def listen_handler(message: types.Message):
         if shop is None:
             return
         if field == 'name':
-            message = ADMIN_EDIT_SHOP_DESCRIPTION_MESSAGE.format(name=message.text, old_name=shop.name)
+            message = ADMIN_EDIT_SHOP_NAME_MESSAGE.format(
+                name=message.text, old_name=shop.name
+            )
         elif field == 'description':
-            message = ADMIN_EDIT_SHOP_NAME_MESSAGE.format(description=message.text, old_description=shop.description)
+            message = ADMIN_EDIT_SHOP_DESCRIPTION_MESSAGE.format(
+                description=message.text, old_description=shop.description
+            )
         else:
             return
 
