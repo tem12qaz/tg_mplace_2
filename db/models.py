@@ -26,6 +26,7 @@ class Shop(Model):
 
 class Product(Model):
     id = fields.IntField(pk=True)
+    price = fields.IntField()
     active = fields.BooleanField(default=False)
     category = fields.ForeignKeyField('models.CategoryShop', related_name='products', index=True)
     name = fields.CharField(100)
@@ -49,6 +50,7 @@ class Deal(Model):
 class Review(Model):
     id = fields.IntField(pk=True)
     product = fields.ForeignKeyField('models.Product', related_name='reviews', index=True)
+    shop = fields.ForeignKeyField('models.Shop', related_name='reviews', index=True)
     customer = fields.ForeignKeyField('models.TelegramUser', related_name='reviews', index=True)
     text = fields.TextField()
     rating = fields.SmallIntField()

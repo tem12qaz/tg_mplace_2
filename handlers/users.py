@@ -7,7 +7,7 @@ from aiogram.types import InputMediaPhoto, InputFile
 from parse import parse
 
 from data.config import FLOOD_RATE, ADMIN_ID
-from db.models import TelegramUser, Shop, Product, Photo, Deal, Review, Category, CategoryShop
+from db.models import TelegramUser, Shop, Product, Photo, Deal, Review, Category, CategoryShop, ServiceCategory
 from data.messages import *
 from keyboards.inline.keyboards import start_callback, back_to_main_menu_keyboard, support_keyboard, \
     get_admin_answer_keyboard, admin_callback, get_start_keyboard, get_seller_keyboard, seller_callback, \
@@ -16,7 +16,9 @@ from keyboards.inline.keyboards import start_callback, back_to_main_menu_keyboar
     get_seller_shop_delete_keyboard, get_seller_shop_categories_keyboard, get_go_seller_categories_keyboard, \
     get_seller_category_keyboard, get_go_seller_category_keyboard, get_seller_delete_category_keyboard, \
     get_seller_products_keyboard, get_go_seller_products_keyboard, get_go_seller_product_keyboard, \
-    get_seller_product_info_keyboard, get_seller_add_photo_product_keyboard, get_delete_product_keyboard
+    get_seller_product_info_keyboard, get_seller_add_photo_product_keyboard, get_delete_product_keyboard, \
+    get_service_categories_keyboard, get_shops_keyboard, get_shop_keyboard, get_back_shop_keyboard, \
+    get_shops_cats_keyboard, get_shops_prods_keyboard, get_prod_keyboard, get_categories_keyboard
 from loader import dp, bot
 
 
@@ -55,10 +57,20 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
     select = callback_data.get('select')
 
     if select == 'shops':
-        pass
+        await bot.edit_message_text(
+            CREATE_SHOP_CATEGORY_MESSAGE,
+            user.telegram_id,
+            callback.message.message_id,
+            reply_markup=await get_categories_keyboard()
+        )
 
     elif select == 'services':
-        pass
+        await bot.edit_message_text(
+            CREATE_SHOP_CATEGORY_MESSAGE,
+            user.telegram_id,
+            callback.message.message_id,
+            reply_markup=await get_service_categories_keyboard()
+        )
 
     elif select == 'seller':
         await bot.edit_message_text(
@@ -91,8 +103,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
         )
 
     elif select == 'main':
-        user.state = ''
-        await user.save()
+        await check_creating(user)
         await bot.edit_message_text(
             MAIN_MENU_MESSAGE,
             user.telegram_id,
@@ -109,6 +120,154 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
             callback.message.message_id,
             reply_markup=back_to_main_menu_keyboard
         )
+
+    elif 'service_' in select:
+        category = await ServiceCategory.get_or_none(id=int(select.replace('service_', '')))
+        if category is None:
+            return
+        user.state = f'service_{category.id}'
+        await user.save()
+        await bot.edit_message_text(
+            SERVICE_DEAL_MESSAGE,
+            user.telegram_id,
+            callback.message.message_id,
+            reply_markup=back_to_main_menu_keyboard
+        )
+
+    elif 'cat_' in select:
+        category = await Category.get_or_none(id=int(select.replace('cat_', '')))
+        if category is None:
+            return
+
+        await bot.edit_message_text(
+            SELECT_SHOP_MESSAGE,
+            user.telegram_id,
+            callback.message.message_id,
+            reply_markup=await get_shops_keyboard(category)
+        )
+
+    elif 'shop_cat_' in select:
+        await check_creating(user)
+        category = await CategoryShop.get_or_none(id=int(select.split('_')[-1]))
+        if category is None:
+            return
+
+        await bot.edit_message_text(
+            SELECT_PRODUCT_MESSAGE,
+            user.telegram_id,
+            callback.message.message_id,
+            reply_markup=await get_shops_prods_keyboard(category)
+        )
+
+    elif 'deal_prod_' in select:
+        await check_creating(user)
+        product = await Product.get_or_none(id=int(select.split('_')[-1]))
+        if product is None:
+            return
+
+        shop = await (await product.category).shop
+        if shop is None:
+            return
+
+        await bot.edit_message_text(
+            DEAL_CREATED_MESSAGE,
+            user.telegram_id,
+            callback.message.message_id,
+            reply_markup=get_back_shop_keyboard(shop)
+        )
+
+        await bot.send_message(
+            ADMIN_ID,
+            PRODUCT_DEAL_MESSAGE.format(
+                shop=shop.name,
+                username=user.username,
+                product=product.name,
+                price=product.price
+            )
+        )
+        await bot.send_message(
+            (await shop.owner).telegram_id,
+            SHOP_DEAL_MESSAGE.format(
+                shop=shop.name,
+                username=user.username,
+                product=product.name,
+                price=product.price
+            )
+        )
+        user.state = ''
+        await user.save()
+
+
+    elif 'shop_prod_' in select:
+        await check_creating(user)
+        product = await Product.get_or_none(id=int(select.split('_')[-1]))
+        if product is None:
+            return
+
+        await send_product_photos(user, product)
+        message = INFO_PRODUCT_MESSAGE.format(
+            name=product.name, description=product.description
+        )
+        reviews = product.reviews.filter()
+        if reviews:
+            rating = 0
+            for review in reviews:
+                rating += review.rating
+            rating = rating / len(reviews)
+            message += RATING.format(rating=rating)
+        keyboard = await get_prod_keyboard(product)
+        await bot.send_message(
+            user.telegram_id,
+            message,
+            reply_markup=keyboard
+        )
+
+    elif 'shop_' in select:
+        await check_creating(user)
+        shop = await Shop.get_or_none(id=int(select.split('_')[-1]))
+        if shop is None:
+            return
+
+        if 'shop_deal_' in select:
+            user.state = f'shop_deal_{shop.id}'
+            await user.save()
+            await bot.edit_message_text(
+                SERVICE_DEAL_MESSAGE,
+                user.telegram_id,
+                callback.message.message_id,
+                reply_markup=get_back_shop_keyboard(shop)
+            )
+
+        elif 'shop_cats_' in select:
+            await bot.edit_message_text(
+                SELECT_CAT_MESSAGE,
+                user.telegram_id,
+                callback.message.message_id,
+                reply_markup=await get_shops_cats_keyboard(shop)
+            )
+
+        else:
+            message = INFO_SHOP_MESSAGE.format(
+                name=shop.name, description=shop.description
+            )
+
+            reviews = shop.reviews.filter()
+            if reviews:
+                rating = 0
+                for review in reviews:
+                    rating += review.rating
+                rating = rating / len(reviews)
+                message += RATING.format(rating=rating)
+
+            await bot.send_photo(
+                user.telegram_id,
+                photo=shop.photo
+            )
+            await bot.send_message(
+                user.telegram_id,
+                message,
+                reply_markup=get_shop_keyboard(shop)
+            )
 
     else:
         return
@@ -137,6 +296,54 @@ async def listen_handler(message: types.Message):
             ADMIN_SENT_MESSAGE,
             reply_markup=back_to_main_menu_keyboard
         )
+
+    elif 'service_' in user.state:
+        category = await ServiceCategory.get_or_none(id=int(user.state.replace('service_', '')))
+        if category is None:
+            return
+        await message.answer(
+            DEAL_CREATED_MESSAGE,
+            reply_markup=back_to_main_menu_keyboard
+        )
+        await bot.send_message(
+            ADMIN_ID,
+            ADMIN_SERVICE_MESSAGE.format(
+                category=category.name,
+                username=user.username,
+                text=message.text
+            )
+        )
+        user.state = ''
+        await user.save()
+
+    elif 'shop_deal_' in user.state:
+        shop = await Shop.get_or_none(id=int(user.state.replace('shop_deal_', '')))
+        if shop is None:
+            return
+
+        await message.answer(
+            DEAL_CREATED_MESSAGE,
+            reply_markup=get_back_shop_keyboard(shop)
+        )
+        await bot.send_message(
+            ADMIN_ID,
+            SHOP_DEAL_MESSAGE.format(
+                shop=shop.name,
+                username=user.username,
+                text=message.text
+            )
+        )
+        await bot.send_message(
+            (await shop.owner).telegram_id,
+            SHOP_DEAL_MESSAGE.format(
+                shop=shop.name,
+                username=user.username,
+                text=message.text
+            )
+        )
+        user.state = ''
+        await user.save()
+
 
     elif 'admin_answer' in user.state:
         state = user.state
@@ -250,6 +457,14 @@ async def listen_handler(message: types.Message):
             message = ADD_PRODUCT_DESCRIPTION_MESSAGE
 
         elif field == 'description':
+            user.state = 'listen_product_price_' + str(product_id)
+            try:
+                product.price = int(message.text)
+            except:
+                await message.delete()
+            message = ADD_PRODUCT_PRICE_MESSAGE
+
+        elif field == 'price':
             user.state = 'listen_product_photo_' + str(product_id)
             product.description = message.text
             message = ADD_PRODUCT_PHOTO_MESSAGE
@@ -465,7 +680,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
         if shop is None:
             return
 
-    if 'shop_cat_' in action or 'edit_cat_' in action or\
+    if 'shop_cat_' in action or 'edit_cat_' in action or \
             'delete_cat_' in action or 'new_product_' in action or 'products_' in action:
         category = await CategoryShop.get_or_none(id=int(action.split('_')[-1]))
 
@@ -531,6 +746,9 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
 
             elif field == 'description':
                 message = ADD_PRODUCT_DESCRIPTION_MESSAGE
+
+            elif field == 'price':
+                message = ADD_PRODUCT_PRICE_MESSAGE
 
             elif field == 'delphoto':
                 await callback.answer(DELETE_PHOTO_ALERT, show_alert=True)
@@ -682,18 +900,24 @@ async def check_creating(user):
             'listen_shop_description_' in user.state or \
             'listen_shop_photo_' in user.state:
         shop = await Shop.get_or_none(id=int(user.state.split('_')[-1]))
+        user.state = ''
+        await user.save()
         if shop is None:
             return
         await shop.delete()
-        user.state = ''
-        await user.save()
 
     elif 'listen_product_' in user.state and 'edit' not in user.state:
         product_id = int(user.state.split('_')[-1])
         product = await Product.get_or_none(id=product_id)
+        user.state = ''
+        await user.save()
         if product is None:
             return
         await product.delete()
+
+    else:
+        user.state = ''
+        await user.save()
 
 
 async def send_product_photos(user: TelegramUser, product: Product):

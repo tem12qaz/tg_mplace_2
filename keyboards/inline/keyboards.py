@@ -2,7 +2,8 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.callback_data import CallbackData
 
 from data.buttons import *
-from db.models import TelegramUser, Category, Shop, CategoryShop, Product
+from data.messages import CREATE_REVIEW_MESSAGE, REVIEW_MESSAGE
+from db.models import TelegramUser, Category, Shop, CategoryShop, Product, ServiceCategory
 
 start_callback = CallbackData("main_menu", 'select')
 admin_callback = CallbackData("admin", 'action', 'param')
@@ -54,6 +55,267 @@ seller_main_menu_keyboard = InlineKeyboardMarkup(
         ]
     ]
 )
+
+async def get_revies_shop_keyboard(shop: Shop):
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text='1', callback_data=start_callback.new(
+                    select='rate_shop_1'
+                )),
+                InlineKeyboardButton(text='1', callback_data=start_callback.new(
+                    select='rate_shop_2'
+                )),
+                InlineKeyboardButton(text='1', callback_data=start_callback.new(
+                    select='rate_shop_3'
+                )),
+                InlineKeyboardButton(text='1', callback_data=start_callback.new(
+                    select='rate_shop_4'
+                )),
+                InlineKeyboardButton(text='1', callback_data=start_callback.new(
+                    select='rate_shop_5'
+                )),
+            ],
+            [
+                InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(select=f'cat_{category.id}'))
+            ]
+        ]
+    )
+    return keyboard
+
+
+def get_back_shop_keyboard(shop: Shop):
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(select=f'shop_{shop.id}'))
+            ]
+        ]
+    )
+    return keyboard
+
+
+async def get_prod_keyboard(product: Product):
+    category = await product.category
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=DEAL_BUTTON, callback_data=start_callback.new(
+                    select=f'deal_prod_{product.id}'
+                )),
+            ],
+            [
+                InlineKeyboardButton(text=DEAL_BUTTON, callback_data=start_callback.new(
+                    select=f'reviews_prod_{product.id}'
+                )),
+                InlineKeyboardButton(text=DEAL_BUTTON, callback_data=start_callback.new(
+                    select=f'review_prod_{product.id}'
+                )),
+            ],
+            [
+                InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(select=f'shop_cat_{category.id}'))
+            ]
+        ]
+    )
+    return keyboard
+
+
+async def get_shop_keyboard(shop: Shop):
+    category = await shop.category
+    if shop.catalog:
+        text = CATEGORIES_BUTTON
+        select = 'shop_cats_'
+    else:
+        text = DEAL_BUTTON
+        select = 'shop_deal_'
+
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=text, callback_data=start_callback.new(
+                    select=f'{select}{shop.id}'
+                )),
+            ],
+            [
+                InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(select=f'cat_{category.id}'))
+            ]
+        ]
+    )
+    return keyboard
+
+
+async def get_shops_cats_keyboard(shop: Shop):
+    categories = await shop.categories.all()
+    inline_keyboard = []
+    for i in range(0, len(categories), 2):
+        if i != len(categories) - 1:
+            inline_keyboard.append(
+                [
+                    InlineKeyboardButton(text=categories[i].name, callback_data=start_callback.new(
+                        select=f'shop_cat_{categories[i].id}'
+                    )),
+                    InlineKeyboardButton(text=categories[i + 1].name, callback_data=start_callback.new(
+                        select=f'shop_cat_{categories[i + 1].id}'
+                    )),
+                ]
+            )
+        else:
+            inline_keyboard.append(
+                [
+                    InlineKeyboardButton(text=categories[i].name, callback_data=start_callback.new(
+                        select=f'shop_cat_{categories[i].id}'
+                    ))
+                ]
+            )
+
+    inline_keyboard.append(
+        [
+            InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(
+                select=f'shop_{shop.id}'
+            ))
+        ]
+    )
+
+
+async def get_shops_prods_keyboard(category: CategoryShop):
+    prods = await category.products.all()
+    shop = await category.shop
+    inline_keyboard = []
+    for i in range(0, len(prods), 2):
+        if i != len(prods) - 1:
+            inline_keyboard.append(
+                [
+                    InlineKeyboardButton(text=prods[i].name, callback_data=start_callback.new(
+                        select=f'shop_prod_{prods[i].id}'
+                    )),
+                    InlineKeyboardButton(text=prods[i + 1].name, callback_data=start_callback.new(
+                        select=f'shop_prod_{prods[i + 1].id}'
+                    )),
+                ]
+            )
+        else:
+            inline_keyboard.append(
+                [
+                    InlineKeyboardButton(text=prods[i].name, callback_data=start_callback.new(
+                        select=f'shop_prod_{prods[i].id}'
+                    ))
+                ]
+            )
+
+    inline_keyboard.append(
+        [
+            InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(
+                select=f'shop_cats_{shop.id}'
+            ))
+        ]
+    )
+
+
+async def get_shops_keyboard(category: Category):
+    shops = await Shop.filter(category=category)
+    inline_keyboard = []
+    for i in range(0, len(shops), 2):
+        if i != len(shops) - 1:
+            inline_keyboard.append(
+                [
+                    InlineKeyboardButton(text=shops[i].name, callback_data=start_callback.new(
+                        select=f'shop_{shops[i].id}'
+                    )),
+                    InlineKeyboardButton(text=shops[i + 1].name, callback_data=start_callback.new(
+                        select=f'shop_{shops[i + 1].id}'
+                    )),
+                ]
+            )
+        else:
+            inline_keyboard.append(
+                [
+                    InlineKeyboardButton(text=shops[i].name, callback_data=start_callback.new(
+                        select=f'shop_{shops[i].id}'
+                    ))
+                ]
+            )
+
+    inline_keyboard.append(
+        [
+            InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(
+                select=f'cat_{category.id}'
+            ))
+        ]
+    )
+
+
+async def get_categories_keyboard():
+    categories = await Category.all()
+    inline_keyboard = []
+
+    for i in range(0, len(categories), 2):
+        if i != len(categories) - 1:
+            inline_keyboard.append(
+                [
+                    InlineKeyboardButton(text=categories[i].name, callback_data=start_callback.new(
+                        select=f'cat_{categories[i].id}'
+                    )),
+                    InlineKeyboardButton(text=categories[i + 1].name, callback_data=start_callback.new(
+                        select=f'cat_{categories[i + 1].id}'
+                    )),
+                ]
+            )
+        else:
+            inline_keyboard.append(
+                [
+                    InlineKeyboardButton(text=categories[i].name, callback_data=start_callback.new(
+                        select=f'cat_{categories[i].id}'
+                    ))
+                ]
+            )
+
+    inline_keyboard.append(
+        [
+            InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(
+                select='main'
+            ))
+        ]
+    )
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+    return keyboard
+
+
+async def get_service_categories_keyboard():
+    categories = await ServiceCategory.all()
+    inline_keyboard = []
+
+    for i in range(0, len(categories), 2):
+        if i != len(categories) - 1:
+            inline_keyboard.append(
+                [
+                    InlineKeyboardButton(text=categories[i].name, callback_data=start_callback.new(
+                        select=f'service_{categories[i].id}'
+                    )),
+                    InlineKeyboardButton(text=categories[i + 1].name, callback_data=start_callback.new(
+                        select=f'service_{categories[i + 1].id}'
+                    )),
+                ]
+            )
+        else:
+            inline_keyboard.append(
+                [
+                    InlineKeyboardButton(text=categories[i].name, callback_data=start_callback.new(
+                        select=f'service_{categories[i].id}'
+                    ))
+                ]
+            )
+
+    inline_keyboard.append(
+        [
+            InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(
+                select='main'
+            ))
+        ]
+    )
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+    return keyboard
 
 
 def get_admin_answer_keyboard(from_user: TelegramUser):
@@ -328,6 +590,11 @@ async def get_seller_product_info_keyboard(product: Product, shop: Shop):
             )),
             InlineKeyboardButton(text=EDIT_DESCRIPTION_BUTTON, callback_data=seller_callback.new(
                 action=f'description_product_{product.id}', shop=str(shop.id)
+            )),
+        ],
+        [
+            InlineKeyboardButton(text=EDIT_PRICE_BUTTON, callback_data=seller_callback.new(
+                action=f'price_product_{product.id}', shop=str(shop.id)
             )),
             InlineKeyboardButton(text=EDIT_PHOTO_BUTTON, callback_data=seller_callback.new(
                 action=f'photo_product_{product.id}', shop=str(shop.id)
