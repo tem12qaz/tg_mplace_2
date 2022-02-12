@@ -532,7 +532,6 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
             elif field == 'delphoto':
                 await callback.answer(DELETE_PHOTO_ALERT, show_alert=True)
                 message = ADD_PRODUCT_PHOTO_MESSAGE
-                keyboard = get_seller_add_photo_product_keyboard(product, shop)
 
             elif field == 'deletephoto':
                 photos = await product.photos.all()
