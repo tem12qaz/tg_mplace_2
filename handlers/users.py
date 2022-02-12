@@ -343,10 +343,17 @@ async def handle_photo(message: types.Message):
             reply_markup=get_admin_edit_shop_keyboard(shop, 'photo')
         )
 
-    elif 'listen_product_photo_' in user.state:
+    elif 'listen_product_photo_' in user.state or 'listen_product_delphoto_' in user.state:
         product = await Product.get_or_none(id=user.state.split('_')[-1])
         if product is None:
             return
+
+        if 'listen_product_delphoto_' in user.state:
+            photos = await product.photos.all()
+            for photo in photos:
+                await photo.delete()
+            user.state = f'listen_product_photo_{product.id}'
+            await user.save()
 
         if len(await product.photos.all()) < 3:
             await Photo.create(source=photo_binary, product=product)
@@ -507,6 +514,8 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
 
         if '_product_' in action:
             field, _, product_id = action.split('_')
+            if field == 'photo':
+                field = 'delphoto'
             user.state = f'edit_listen_product_{field}_{product_id}'
             await user.save()
 
@@ -518,9 +527,9 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
             elif field == 'description':
                 message = ADD_PRODUCT_DESCRIPTION_MESSAGE
 
-            elif field == 'photo':
+            elif field == 'delphoto':
                 await callback.answer(DELETE_PHOTO_ALERT, show_alert=True)
-                message = DELETE_CONFIRM_MESSAGE
+                message = ADD_PRODUCT_PHOTO_MESSAGE
                 keyboard = get_seller_add_photo_product_keyboard(product, shop)
 
             elif field == 'deletephoto':

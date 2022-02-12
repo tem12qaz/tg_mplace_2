@@ -96,7 +96,7 @@ SELLER_INFO_CATEGORY_MESSAGE = '''<b>Категория:</b>
 
 DELETE_CATEGORY_ALERT = '''Вместе с категорией будут удалены её товары'''
 
-DELETE_PHOTO_ALERT = '''Для изменения фото требуется удалить старые'''
+DELETE_PHOTO_ALERT = '''При отправке новых фото будут удалены старые'''
 
 DELETE_PRODUCT_ALERT = '''Удаление продукта нельзя отменить'''
 
