@@ -505,12 +505,12 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
             return
 
     elif 'product_' in action:
-        product = await Product.get_or_none(id=int(user.state.split('_')[-1]))
+        product = await Product.get_or_none(id=int(action.split('_')[-1]))
         if product is None:
             return
 
         if '_product_' in action:
-            field, _, product_id = user.state.split('_')
+            field, _, product_id = action.split('_')
             user.state = f'edit_listen_product_{field}_{product_id}'
             await user.save()
 

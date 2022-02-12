@@ -377,7 +377,7 @@ async def get_seller_products_keyboard(shop: Shop, category: CategoryShop):
             [
                 InlineKeyboardButton(text=product.name, callback_data=seller_callback.new(
                     action=f'product_{product.id}', shop=str(shop.id)),
-                                     )
+                )
             ]
         )
 
