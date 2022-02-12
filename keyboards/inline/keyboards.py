@@ -176,6 +176,9 @@ async def get_shops_cats_keyboard(shop: Shop):
         ]
     )
 
+    keyboard = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+    return keyboard
+
 
 async def get_shops_prods_keyboard(category: CategoryShop):
     prods = await category.products.all()
@@ -210,6 +213,9 @@ async def get_shops_prods_keyboard(category: CategoryShop):
         ]
     )
 
+    keyboard = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+    return keyboard
+
 
 async def get_shops_keyboard(category: Category):
     shops = await Shop.filter(category=category)
@@ -242,6 +248,9 @@ async def get_shops_keyboard(category: Category):
             ))
         ]
     )
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+    return keyboard
 
 
 async def get_categories_keyboard():
