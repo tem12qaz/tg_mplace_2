@@ -458,15 +458,17 @@ async def listen_handler(message: types.Message):
 
         elif field == 'description':
             user.state = 'listen_product_price_' + str(product_id)
+            message = ADD_PRODUCT_PRICE_MESSAGE
+            product.description = message.text
+
+        elif field == 'price':
+            user.state = 'listen_product_photo_' + str(product_id)
             try:
                 product.price = int(message.text)
             except:
                 await message.delete()
-            message = ADD_PRODUCT_PRICE_MESSAGE
+                return
 
-        elif field == 'price':
-            user.state = 'listen_product_photo_' + str(product_id)
-            product.description = message.text
             message = ADD_PRODUCT_PHOTO_MESSAGE
 
         elif field == 'photo':
