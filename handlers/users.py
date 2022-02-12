@@ -260,10 +260,15 @@ async def listen_handler(message: types.Message):
                 user.state = ''
                 if not edit:
                     await send_product_photos(user, product)
-                message = SELLER_INFO_PRODUCT_MESSAGE.format(
-                    name=product.name, description=product.description
-                )
-                keyboard = await get_seller_product_info_keyboard(product, shop)
+                    message = SELLER_INFO_PRODUCT_MESSAGE.format(
+                        name=product.name, description=product.description
+                    )
+                    keyboard = await get_seller_product_info_keyboard(product, shop)
+                    await bot.send_message(
+                        user.telegram_id,
+                        message,
+                        reply_markup=keyboard
+                    )
                 await user.save()
 
         await product.save()
@@ -539,11 +544,17 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
                 return
 
         else:
-            await send_product_photos(user, product)
             message = SELLER_INFO_PRODUCT_MESSAGE.format(
                 name=product.name, description=product.description
             )
             keyboard = await get_seller_product_info_keyboard(product, shop)
+            await send_product_photos(user, product)
+            await bot.send_message(
+                user.telegram_id,
+                message,
+                reply_markup=keyboard
+            )
+            return
 
     elif action == 'open_shop':
         message = CREATE_SHOP_TYPE_MESSAGE
