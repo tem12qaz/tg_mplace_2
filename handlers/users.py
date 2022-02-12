@@ -269,6 +269,8 @@ async def listen_handler(message: types.Message):
                         message,
                         reply_markup=keyboard
                     )
+                    return
+
                 await user.save()
 
         await product.save()
