@@ -24,4 +24,6 @@ EDIT_PRICE_BUTTON = 'Цена'
 ADD_PRODUCT_BUTTON = '➕ Добавить товар'
 PRODUCTS_BUTTON = 'Товары'
 DEAL_BUTTON = 'Оставить заявку'
+REVIEW_BUTTON = 'Оставить отзыв'
+REVIEWS_BUTTON = 'Отзывы'
 

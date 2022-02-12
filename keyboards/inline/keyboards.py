@@ -105,10 +105,10 @@ async def get_prod_keyboard(product: Product):
                 )),
             ],
             [
-                InlineKeyboardButton(text=DEAL_BUTTON, callback_data=start_callback.new(
+                InlineKeyboardButton(text=REVIEW_BUTTON, callback_data=start_callback.new(
                     select=f'reviews_prod_{product.id}'
                 )),
-                InlineKeyboardButton(text=DEAL_BUTTON, callback_data=start_callback.new(
+                InlineKeyboardButton(text=REVIEWS_BUTTON, callback_data=start_callback.new(
                     select=f'review_prod_{product.id}'
                 )),
             ],
