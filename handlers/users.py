@@ -717,7 +717,8 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
             product = await Product.create(
                 category=category,
                 name='',
-                description=''
+                description='',
+                price=0
             )
             user.state = f'listen_product_name_{product.id}'
             await user.save()
