@@ -206,7 +206,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
 
         await send_product_photos(user, product)
         message = INFO_PRODUCT_MESSAGE.format(
-            name=product.name, description=product.description
+            name=product.name, description=product.description, price=product.price
         )
         reviews = await product.reviews.all()
         if reviews:
