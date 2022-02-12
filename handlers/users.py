@@ -458,8 +458,8 @@ async def listen_handler(message: types.Message):
 
         elif field == 'description':
             user.state = 'listen_product_price_' + str(product_id)
-            message = ADD_PRODUCT_PRICE_MESSAGE
             product.description = message.text
+            message = ADD_PRODUCT_PRICE_MESSAGE
 
         elif field == 'price':
             user.state = 'listen_product_photo_' + str(product_id)
