@@ -266,7 +266,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
             await bot.send_message(
                 user.telegram_id,
                 message,
-                reply_markup=get_shop_keyboard(shop)
+                reply_markup=await get_shop_keyboard(shop)
             )
 
     else:
