@@ -259,16 +259,7 @@ async def listen_handler(message: types.Message):
                 product.active = True
                 user.state = ''
                 if not edit:
-                    photos = await product.photos.all()
-
-                    media = types.MediaGroup()
-                    for photo in photos:
-                        media.attach_photo(InputFile(io.BytesIO(photo.source)))
-
-                    await bot.send_media_group(
-                        message.from_user.id,
-                        media=media
-                    )
+                    await send_product_photos(user, product)
                 message = SELLER_INFO_PRODUCT_MESSAGE.format(
                     name=product.name, description=product.description
                 )
@@ -548,11 +539,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
                 return
 
         else:
-            photos = await product.photos.all()
-            await bot.send_media_group(
-                callback.from_user.id,
-                [InputMediaPhoto(photo.source) for photo in photos]
-            )
+            await send_product_photos(user, product)
             message = SELLER_INFO_PRODUCT_MESSAGE.format(
                 name=product.name, description=product.description
             )
@@ -683,3 +670,16 @@ async def check_creating(user):
         if product is None:
             return
         await product.delete()
+
+
+async def send_product_photos(user: TelegramUser, product: Product):
+    photos = await product.photos.all()
+
+    media = types.MediaGroup()
+    for photo in photos:
+        media.attach_photo(InputFile(io.BytesIO(photo.source)))
+
+    await bot.send_media_group(
+        user.telegram_id,
+        media=media
+    )
