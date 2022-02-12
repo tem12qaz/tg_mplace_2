@@ -476,7 +476,7 @@ async def listen_handler(message: types.Message):
                 if not edit:
                     await send_product_photos(user, product)
                     message = SELLER_INFO_PRODUCT_MESSAGE.format(
-                        name=product.name, description=product.description
+                        name=product.name, description=product.description, price=product.price
                     )
                     keyboard = await get_seller_product_info_keyboard(product, shop)
                     await bot.send_message(
