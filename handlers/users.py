@@ -134,18 +134,6 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
             reply_markup=back_to_main_menu_keyboard
         )
 
-    elif 'cat_' in select:
-        category = await Category.get_or_none(id=int(select.replace('cat_', '')))
-        if category is None:
-            return
-
-        await bot.edit_message_text(
-            SELECT_SHOP_MESSAGE,
-            user.telegram_id,
-            callback.message.message_id,
-            reply_markup=await get_shops_keyboard(category)
-        )
-
     elif 'shop_cat_' in select:
         await check_creating(user)
         category = await CategoryShop.get_or_none(id=int(select.split('_')[-1]))
@@ -157,6 +145,18 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
             user.telegram_id,
             callback.message.message_id,
             reply_markup=await get_shops_prods_keyboard(category)
+        )
+
+    elif 'cat_' in select:
+        category = await Category.get_or_none(id=int(select.replace('cat_', '')))
+        if category is None:
+            return
+
+        await bot.edit_message_text(
+            SELECT_SHOP_MESSAGE,
+            user.telegram_id,
+            callback.message.message_id,
+            reply_markup=await get_shops_keyboard(category)
         )
 
     elif 'deal_prod_' in select:
