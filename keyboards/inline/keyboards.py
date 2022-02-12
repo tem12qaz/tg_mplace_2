@@ -256,6 +256,11 @@ def get_seller_add_photo_product_keyboard(product: Product, shop: Shop):
                 InlineKeyboardButton(text=DELETE_BUTTON, callback_data=seller_callback.new(
                     action=f'deletephoto_product_{product.id}', shop=str(shop.id)
                 ))
+            ],
+            [
+                InlineKeyboardButton(text=BACK_BUTTON, callback_data=seller_callback.new(
+                    action=f'product_{product.id}', shop=str(shop.id)
+                ))
             ]
         ]
     )

@@ -231,7 +231,7 @@ async def listen_handler(message: types.Message):
     elif 'listen_product_' in user.state:
         edit = False
         if 'edit' in user.state:
-            user.state = user.state.replace('edit', '')
+            user.state = user.state.replace('edit_', '')
             edit = True
 
         field, product_id = user.state.replace('listen_product_', '').split('_')
