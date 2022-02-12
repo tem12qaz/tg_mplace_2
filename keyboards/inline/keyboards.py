@@ -236,7 +236,7 @@ async def get_shops_keyboard(category: Category):
             inline_keyboard.append(
                 [
                     InlineKeyboardButton(text=shops[i].name, callback_data=start_callback.new(
-                        select=f'shops'
+                        select=f'shop_{shops[i].id}'
                     ))
                 ]
             )
@@ -244,7 +244,7 @@ async def get_shops_keyboard(category: Category):
     inline_keyboard.append(
         [
             InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(
-                select=f'cat_{category.id}'
+                select='shops'
             ))
         ]
     )
