@@ -208,7 +208,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
         message = INFO_PRODUCT_MESSAGE.format(
             name=product.name, description=product.description
         )
-        reviews = await product.reviews.filter()
+        reviews = await product.reviews.all()
         if reviews:
             rating = 0
             for review in reviews:
@@ -251,7 +251,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
                 name=shop.name, description=shop.description
             )
 
-            reviews = await shop.reviews.filter()
+            reviews = await shop.reviews.all()
             if reviews:
                 rating = 0
                 for review in reviews:
