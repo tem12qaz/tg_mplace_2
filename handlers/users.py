@@ -208,7 +208,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
         reviews = await product.reviews.all()
         if reviews:
             for review in reviews:
-                message += REVIEW_MESSAGE.format(rating=review.rating, text=review.text)
+                message += REVIEWS_MESSAGE.format(rating=review.rating, text=review.text)
         else:
             message = 'Нет отзывов'
 
