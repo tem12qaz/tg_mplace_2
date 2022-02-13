@@ -27,6 +27,8 @@ from loader import dp, bot
 @dp.throttled(rate=FLOOD_RATE)
 async def bot_start(message: types.Message):
     user = await TelegramUser.get_or_none(telegram_id=message.from_user.id)
+    print(message.from_user.id)
+    print(message.from_user)
     if user is None:
         user = await TelegramUser.create(
             telegram_id=message.from_user.id, username=message.from_user.username
