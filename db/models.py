@@ -6,7 +6,7 @@ from flask_security import UserMixin, RoleMixin
 class TelegramUser(Model):
     id = fields.IntField(pk=True)
     telegram_id = fields.BigIntField(unique=True, index=True)
-    username = fields.CharField(128, unique=True)
+    username = fields.CharField(128, unique=True, null=True)
     state = fields.CharField(64, default='')
 
     def __str__(self):

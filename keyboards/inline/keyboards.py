@@ -4,7 +4,7 @@ from aiogram.utils.callback_data import CallbackData
 
 from data.buttons import *
 from data.messages import CREATE_REVIEW_MESSAGE, REVIEW_MESSAGE
-from db.models import TelegramUser, Category, Shop, CategoryShop, Product, ServiceCategory
+from db.models import TelegramUser, Category, Shop, CategoryShop, Product, ServiceCategory, Review
 
 start_callback = CallbackData("main_menu", 'select')
 admin_callback = CallbackData("admin", 'action', 'param')
@@ -58,9 +58,17 @@ seller_main_menu_keyboard = InlineKeyboardMarkup(
 )
 
 
-def get_back_to_prod_keyboard(product: Product):
+def get_reviews_keyboard(product: Product, review: Review):
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
+            [
+                InlineKeyboardButton(text='<', callback_data=start_callback.new(
+                    select=f'{review.id}_>reviews_prod_{product.id}'
+                )),
+                InlineKeyboardButton(text='>', callback_data=start_callback.new(
+                    select=f'{review.id}_<reviews_prod_{product.id}'
+                ))
+            ],
             [
                 InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(
                     select=f'shop_prod_{product.id}'
@@ -76,7 +84,7 @@ def get_phone_prod_keyboard(product: Product):
         inline_keyboard=[
             [
                 InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(
-                    select=f'deal_prod_{product.id},'
+                    select=f'deal_prod_{product.id}'
                 ), request_contact=True)
             ],
             [
