@@ -70,7 +70,7 @@ def get_back_to_prod_keyboard(product: Product):
     return keyboard
 
 
-async def get_review_keyboard(product: Product):
+def get_review_keyboard(product: Product):
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [
