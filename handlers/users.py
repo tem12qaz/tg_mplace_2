@@ -170,7 +170,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
         if shop is None:
             return
 
-        user.state = f'contacts_{product}'
+        user.state = f'contacts_{product.id}'
         await user.save()
 
         await bot.edit_message_text(
