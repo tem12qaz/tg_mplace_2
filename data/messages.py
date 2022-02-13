@@ -192,6 +192,20 @@ PRODUCT_DEAL_MESSAGE = '''<b>Заявка</b>
 {username}'''
 
 
+RATE_PRODUCT_MESSAGE = 'Поставьте оценку продукту'
+
+RATE_PRODUCT_TEXT_MESSAGE = 'Оставьте текстовый отзыв товару'
+
+REVIEW_CREATED_MESSAGE = 'Спасибо за ваш отзыв!'
+
+
+REVIEWS_MESSAGE = '''Оценка <b>{rating}/5</b>
+{text}
+-------------------------------
+'''
+
+
+
 
 
 

@@ -56,28 +56,44 @@ seller_main_menu_keyboard = InlineKeyboardMarkup(
     ]
 )
 
-async def get_revies_shop_keyboard(shop: Shop):
+
+def get_back_to_prod_keyboard(product: Product):
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(
+                    select=f'shop_prod_{product.id}'
+                ))
+            ]
+        ]
+    )
+    return keyboard
+
+
+async def get_review_keyboard(product: Product):
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(text='1', callback_data=start_callback.new(
-                    select='rate_shop_1'
+                    select=f'rate_prod_1_{product.id}'
                 )),
-                InlineKeyboardButton(text='1', callback_data=start_callback.new(
-                    select='rate_shop_2'
+                InlineKeyboardButton(text='2', callback_data=start_callback.new(
+                    select=f'rate_prod_2_{product.id}'
                 )),
-                InlineKeyboardButton(text='1', callback_data=start_callback.new(
-                    select='rate_shop_3'
+                InlineKeyboardButton(text='3', callback_data=start_callback.new(
+                    select=f'rate_prod_3_{product.id}'
                 )),
-                InlineKeyboardButton(text='1', callback_data=start_callback.new(
-                    select='rate_shop_4'
+                InlineKeyboardButton(text='4', callback_data=start_callback.new(
+                    select=f'rate_prod_4_{product.id}'
                 )),
-                InlineKeyboardButton(text='1', callback_data=start_callback.new(
-                    select='rate_shop_5'
+                InlineKeyboardButton(text='5', callback_data=start_callback.new(
+                    select=f'rate_prod_5_{product.id}'
                 )),
             ],
             [
-                InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(select=f'cat_{category.id}'))
+                InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(
+                    select=f'shop_prod_{product.id}'
+                ))
             ]
         ]
     )

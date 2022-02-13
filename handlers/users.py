@@ -18,7 +18,8 @@ from keyboards.inline.keyboards import start_callback, back_to_main_menu_keyboar
     get_seller_products_keyboard, get_go_seller_products_keyboard, get_go_seller_product_keyboard, \
     get_seller_product_info_keyboard, get_seller_add_photo_product_keyboard, get_delete_product_keyboard, \
     get_service_categories_keyboard, get_shops_keyboard, get_shop_keyboard, get_back_shop_keyboard, \
-    get_shops_cats_keyboard, get_shops_prods_keyboard, get_prod_keyboard, get_categories_keyboard
+    get_shops_cats_keyboard, get_shops_prods_keyboard, get_prod_keyboard, get_categories_keyboard, get_review_keyboard, \
+    get_back_to_prod_keyboard
 from loader import dp, bot
 
 
@@ -197,6 +198,39 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
         user.state = ''
         await user.save()
 
+    elif 'reviews_prod_' in select:
+        await check_creating(user)
+        product = await Product.get_or_none(id=int(select.split('_')[-1]))
+        if product is None:
+            return
+
+        message = ''
+        reviews = await product.reviews.all()
+        if reviews:
+            for review in reviews:
+                message += REVIEW_MESSAGE.format(rating=review.rating, text=review.text)
+        else:
+            message = 'Нет отзывов'
+
+        await bot.edit_message_text(
+            message,
+            user.telegram_id,
+            callback.message.message_id,
+            reply_markup=get_back_to_prod_keyboard(product)
+        )
+
+    elif 'review_prod_' in select:
+        await check_creating(user)
+        product = await Product.get_or_none(id=int(select.split('_')[-1]))
+        if product is None:
+            return
+
+        await bot.edit_message_text(
+            RATE_PRODUCT_MESSAGE,
+            user.telegram_id,
+            callback.message.message_id,
+            reply_markup=get_review_keyboard(product)
+        )
 
     elif 'shop_prod_' in select:
         await check_creating(user)
@@ -220,6 +254,22 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
             user.telegram_id,
             message,
             reply_markup=keyboard
+        )
+
+    elif 'rate_prod_' in select:
+        await check_creating(user)
+        product = await Product.get_or_none(id=int(select.split('_')[-1]))
+        if product is None:
+            return
+
+        user.state = select
+        await user.save()
+
+        await bot.edit_message_text(
+            RATE_PRODUCT_TEXT_MESSAGE,
+            user.telegram_id,
+            callback.message.message_id,
+            reply_markup=get_back_to_prod_keyboard(product)
         )
 
     elif 'shop_' in select:
@@ -315,6 +365,27 @@ async def listen_handler(message: types.Message):
         )
         user.state = ''
         await user.save()
+
+    elif 'rate_prod_' in user.state:
+        rating, product_id = user.state.replace('rate_prod_', '').split('_')
+        user.state = ''
+        await user.save()
+
+        product = await Product.get_or_none(id=int(product_id))
+        if product is None:
+            return
+
+        await Review.create(
+            product=product,
+            shop=await (await product.category).shop,
+            customer=user,
+            text=message.text,
+            rating=int(rating)
+        )
+        await message.answer(
+            REVIEW_CREATED_MESSAGE,
+            get_back_to_prod_keyboard(product)
+        )
 
     elif 'shop_deal_' in user.state:
         shop = await Shop.get_or_none(id=int(user.state.replace('shop_deal_', '')))
