@@ -130,7 +130,8 @@ SELLER_INFO_PRODUCT_MESSAGE = '''<b>Ваш товар</b>
 <b>Цена:</b>
 {price}'''
 
-SERVICE_DEAL_MESSAGE = '''Введите текст заяки'''
+SERVICE_DEAL_MESSAGE = '''Введите текст заяки.
+Укажите свои контакты для связи.'''
 
 ADMIN_SERVICE_MESSAGE = '''<b>Заявка на получение услуги</b>
 
@@ -189,7 +190,10 @@ PRODUCT_DEAL_MESSAGE = '''<b>Заявка</b>
 {price}
 
 <b>Имя пользователя:</b>
-{username}'''
+{username}
+
+<b>Контакты</b>
+{contacts}'''
 
 
 RATE_PRODUCT_MESSAGE = 'Поставьте оценку продукту'
@@ -198,10 +202,11 @@ RATE_PRODUCT_TEXT_MESSAGE = 'Оставьте текстовый отзыв то
 
 REVIEW_CREATED_MESSAGE = 'Спасибо за ваш отзыв!'
 
+CONTACTS_MESSAGE = '''Заказ оформлен
+Напишите свой телефон и адрес доставки'''
 
 REVIEWS_MESSAGE = '''Оценка <b>{rating}/5</b>
 {text}
--------------------------------
 '''
 
 

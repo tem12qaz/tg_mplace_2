@@ -6,7 +6,7 @@ from aiogram.dispatcher.filters import CommandStart, CommandHelp
 from aiogram.types import InputMediaPhoto, InputFile
 from parse import parse
 
-from data.config import FLOOD_RATE, ADMIN_ID
+from data.config import FLOOD_RATE, ADMIN_ID, ADMINS
 from db.models import TelegramUser, Shop, Product, Photo, Deal, Review, Category, CategoryShop, ServiceCategory
 from data.messages import *
 from keyboards.inline.keyboards import start_callback, back_to_main_menu_keyboard, support_keyboard, \
@@ -170,33 +170,15 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
         if shop is None:
             return
 
+        user.state = f'contacts_{product}'
+        await user.save()
+
         await bot.edit_message_text(
-            DEAL_CREATED_MESSAGE,
+            CONTACTS_MESSAGE,
             user.telegram_id,
             callback.message.message_id,
             reply_markup=get_back_shop_keyboard(shop)
         )
-
-        await bot.send_message(
-            ADMIN_ID,
-            PRODUCT_DEAL_MESSAGE.format(
-                shop=shop.name,
-                username=user.username,
-                product=product.name,
-                price=product.price
-            )
-        )
-        await bot.send_message(
-            (await shop.owner).telegram_id,
-            SHOP_DEAL_MESSAGE.format(
-                shop=shop.name,
-                username=user.username,
-                product=product.name,
-                price=product.price
-            )
-        )
-        user.state = ''
-        await user.save()
 
     elif 'reviews_prod_' in select:
         await check_creating(user)
@@ -373,6 +355,36 @@ async def listen_handler(message: types.Message):
             reply_markup=back_to_main_menu_keyboard
         )
 
+    elif 'contacts_' in user.state:
+        product = await Product.get_or_none(id=int(user.state.replace('contacts_')))
+        shop = await (await product.category).shop
+        await message.answer(
+            DEAL_CREATED_MESSAGE,
+            reply_markup=get_back_shop_keyboard(shop)
+        )
+
+        for admin in ADMINS:
+            await bot.send_message(
+                admin,
+                PRODUCT_DEAL_MESSAGE.format(
+                    shop=shop.name,
+                    username=user.username,
+                    product=product.name,
+                    price=product.price
+                )
+            )
+        await bot.send_message(
+            (await shop.owner).telegram_id,
+            SHOP_DEAL_MESSAGE.format(
+                shop=shop.name,
+                username=user.username,
+                product=product.name,
+                price=product.price
+            )
+        )
+        user.state = ''
+        await user.save()
+
     elif 'service_' in user.state:
         category = await ServiceCategory.get_or_none(id=int(user.state.replace('service_', '')))
         if category is None:
@@ -381,14 +393,15 @@ async def listen_handler(message: types.Message):
             DEAL_CREATED_MESSAGE,
             reply_markup=back_to_main_menu_keyboard
         )
-        await bot.send_message(
-            ADMIN_ID,
-            ADMIN_SERVICE_MESSAGE.format(
-                category=category.name,
-                username=user.username,
-                text=message.text
+        for admin in ADMINS:
+            await bot.send_message(
+                admin,
+                ADMIN_SERVICE_MESSAGE.format(
+                    category=category.name,
+                    username=user.username,
+                    text=message.text
+                )
             )
-        )
         user.state = ''
         await user.save()
 
@@ -422,14 +435,15 @@ async def listen_handler(message: types.Message):
             DEAL_CREATED_MESSAGE,
             reply_markup=get_back_shop_keyboard(shop)
         )
-        await bot.send_message(
-            ADMIN_ID,
-            SHOP_DEAL_MESSAGE.format(
-                shop=shop.name,
-                username=user.username,
-                text=message.text
+        for admin in ADMINS:
+            await bot.send_message(
+                admin,
+                SHOP_DEAL_MESSAGE.format(
+                    shop=shop.name,
+                    username=user.username,
+                    text=message.text
+                )
             )
-        )
         await bot.send_message(
             (await shop.owner).telegram_id,
             SHOP_DEAL_MESSAGE.format(
