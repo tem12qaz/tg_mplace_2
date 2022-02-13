@@ -220,7 +220,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
                 return
             reviews = await product.reviews.all()
             try:
-                review = reviews[reviews.index(review) + 1]
+                review = reviews[reviews.index(review) - 1]
             except:
                 review = await reviews[-1]
         else:
@@ -405,7 +405,7 @@ async def listen_handler(message: types.Message):
             product=product,
             shop=await (await product.category).shop,
             customer=user,
-            text=message.text,
+            text=message.text[:3900],
             rating=int(rating)
         )
         await message.answer(
