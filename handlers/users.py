@@ -370,7 +370,8 @@ async def listen_handler(message: types.Message):
                     shop=shop.name,
                     username=user.username,
                     product=product.name,
-                    price=product.price
+                    price=product.price,
+                    contacts=message.text[:3000]
                 )
             )
         await bot.send_message(
