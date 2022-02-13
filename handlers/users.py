@@ -384,7 +384,7 @@ async def listen_handler(message: types.Message):
         )
         await message.answer(
             REVIEW_CREATED_MESSAGE,
-            get_back_to_prod_keyboard(product)
+            reply_markup=get_back_to_prod_keyboard(product)
         )
 
     elif 'shop_deal_' in user.state:
