@@ -19,7 +19,7 @@ from keyboards.inline.keyboards import start_callback, back_to_main_menu_keyboar
     get_seller_product_info_keyboard, get_seller_add_photo_product_keyboard, get_delete_product_keyboard, \
     get_service_categories_keyboard, get_shops_keyboard, get_shop_keyboard, get_back_shop_keyboard, \
     get_shops_cats_keyboard, get_shops_prods_keyboard, get_prod_keyboard, get_categories_keyboard, get_review_keyboard, \
-    get_back_to_prod_keyboard, get_phone_prod_keyboard
+    get_back_to_prod_keyboard, get_reviews_keyboard
 from loader import dp, bot
 
 
@@ -174,9 +174,8 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
             DEAL_CREATED_MESSAGE,
             user.telegram_id,
             callback.message.message_id,
-            reply_markup=get_phone_prod_keyboard(shop)
+            reply_markup=get_back_shop_keyboard(shop)
         )
-        return
 
         await bot.send_message(
             ADMIN_ID,
@@ -205,11 +204,37 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
         if product is None:
             return
 
-        message = ''
-        reviews = await product.reviews.all()
-        if reviews:
-            for review in reviews:
-                message += REVIEWS_MESSAGE.format(rating=review.rating, text=review.text)
+        if '>reviews_prod' in select:
+            review = await Review.get_or_none(id=int(select.split('_')[0]))
+            if review is None:
+                return
+            reviews = await product.reviews.all()
+            try:
+                review = reviews[reviews.index(review) + 1]
+            except:
+                review = await reviews[0]
+
+        elif '<reviews_prod' in select:
+            review = await Review.get_or_none(id=int(select.split('_')[0]))
+            if review is None:
+                return
+            reviews = await product.reviews.all()
+            try:
+                review = reviews[reviews.index(review) + 1]
+            except:
+                review = await reviews[-1]
+        else:
+            reviews = await product.reviews.all()
+            if reviews:
+                review = await reviews[0]
+            else:
+                review = None
+
+        keyboard = get_back_to_prod_keyboard(product)
+        if review:
+            message = REVIEWS_MESSAGE.format(rating=review.rating, text=review.text)
+            if len(reviews) != 1:
+                keyboard = get_reviews_keyboard(product, review)
         else:
             message = 'Нет отзывов'
 
@@ -217,7 +242,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
             message,
             user.telegram_id,
             callback.message.message_id,
-            reply_markup=get_back_to_prod_keyboard(product)
+            reply_markup=keyboard
         )
 
     elif 'review_prod_' in select:
