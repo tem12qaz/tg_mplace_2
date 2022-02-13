@@ -19,7 +19,7 @@ from keyboards.inline.keyboards import start_callback, back_to_main_menu_keyboar
     get_seller_product_info_keyboard, get_seller_add_photo_product_keyboard, get_delete_product_keyboard, \
     get_service_categories_keyboard, get_shops_keyboard, get_shop_keyboard, get_back_shop_keyboard, \
     get_shops_cats_keyboard, get_shops_prods_keyboard, get_prod_keyboard, get_categories_keyboard, get_review_keyboard, \
-    get_back_to_prod_keyboard
+    get_back_to_prod_keyboard, get_phone_prod_keyboard
 from loader import dp, bot
 
 
@@ -174,8 +174,9 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
             DEAL_CREATED_MESSAGE,
             user.telegram_id,
             callback.message.message_id,
-            reply_markup=get_back_shop_keyboard(shop)
+            reply_markup=get_phone_prod_keyboard(shop)
         )
+        return
 
         await bot.send_message(
             ADMIN_ID,
@@ -247,7 +248,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
             rating = 0
             for review in reviews:
                 rating += review.rating
-            rating = rating / len(reviews)
+            rating = round(rating / len(reviews), 2)
             message += RATING.format(rating=rating)
         keyboard = await get_prod_keyboard(product)
         await bot.send_message(

@@ -1,3 +1,4 @@
+from aiogram import types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.callback_data import CallbackData
 
@@ -60,6 +61,24 @@ seller_main_menu_keyboard = InlineKeyboardMarkup(
 def get_back_to_prod_keyboard(product: Product):
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
+            [
+                InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(
+                    select=f'shop_prod_{product.id}'
+                ))
+            ]
+        ]
+    )
+    return keyboard
+
+
+def get_phone_prod_keyboard(product: Product):
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(
+                    select=f'deal_prod_{product.id},'
+                ), request_contact=True)
+            ],
             [
                 InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(
                     select=f'shop_prod_{product.id}'
