@@ -177,7 +177,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
             CONTACTS_MESSAGE,
             user.telegram_id,
             callback.message.message_id,
-            reply_markup=get_back_to_prod_keyboard(shop)
+            reply_markup=get_back_to_prod_keyboard(product)
         )
 
     elif 'reviews_prod_' in select:
@@ -358,9 +358,12 @@ async def listen_handler(message: types.Message):
     elif 'contacts_' in user.state:
         product = await Product.get_or_none(id=int(user.state.replace('contacts_')))
         shop = await (await product.category).shop
+        if product is None or shop is None:
+            return
+
         await message.answer(
             DEAL_CREATED_MESSAGE,
-            reply_markup=get_back_to_prod_keyboard(shop)
+            reply_markup=get_back_to_prod_keyboard(product)
         )
 
         for admin in ADMINS:
