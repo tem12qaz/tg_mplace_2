@@ -177,7 +177,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
             CONTACTS_MESSAGE,
             user.telegram_id,
             callback.message.message_id,
-            reply_markup=get_back_shop_keyboard(shop)
+            reply_markup=get_back_to_prod_keyboard(shop)
         )
 
     elif 'reviews_prod_' in select:
@@ -360,7 +360,7 @@ async def listen_handler(message: types.Message):
         shop = await (await product.category).shop
         await message.answer(
             DEAL_CREATED_MESSAGE,
-            reply_markup=get_back_shop_keyboard(shop)
+            reply_markup=get_back_to_prod_keyboard(shop)
         )
 
         for admin in ADMINS:
