@@ -453,24 +453,25 @@ async def listen_handler(message: types.Message):
 
             elif bid.field3:
                 bid.field4 = message.text[:1024]
-                text = SEND_MESSAGE + form.field5
                 if not form.field5:
                     await send_deal(bid)
                     return
+                text = SEND_MESSAGE + form.field5
 
             elif bid.field2:
                 bid.field3 = message.text[:1024]
-                text = SEND_MESSAGE + form.field4
                 if not form.field4:
                     await send_deal(bid)
                     return
+                text = SEND_MESSAGE + form.field4
 
             elif bid.field1:
                 bid.field2 = message.text[:1024]
-                text = SEND_MESSAGE + form.field3
                 if not form.field3:
                     await send_deal(bid)
                     return
+                text = SEND_MESSAGE + form.field3
+
             else:
                 return
 
