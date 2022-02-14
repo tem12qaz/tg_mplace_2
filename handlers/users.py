@@ -973,7 +973,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
 
         else:
             message = SELLER_INFO_PRODUCT_MESSAGE.format(
-                name=product.name, description=product.description
+                name=product.name, description=product.description, price=product.price
             )
             keyboard = await get_seller_product_info_keyboard(product, shop)
             await send_product_photos(user, product)
