@@ -711,6 +711,7 @@ async def handle_docs(message: types.Message):
     photo = message.document
     # print(message.document)
     print(photo)
+    print('-------------------')
     name = f'files/{message.from_user.id}_{photo.file_id}.jpg'
     await photo.download(destination_file=name)
 
