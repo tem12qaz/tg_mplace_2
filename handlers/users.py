@@ -723,15 +723,14 @@ async def handle_photo(message: types.Message):
         )
 
     elif 'mail' in user.state:
-        print('x')
         if len(user.state.split('_')) > 10:
-            print('t')
             await message.delete()
             return
 
         photo = await Photo.create(source=photo_binary)
         user.state = user.state + '_' + str(photo.id)
         await user.save()
+        return
 
     elif 'change_shop_photo_' in user.state:
         shop = await Shop.get_or_none(id=int(user.state.replace('change_shop_photo_', '')))
@@ -828,6 +827,7 @@ async def handle_docs(message: types.Message):
         photo = await Photo.create(source=photo_binary)
         user.state = user.state + '_' + str(photo.id)
         await user.save()
+        return
 
     elif 'change_shop_photo_' in user.state:
         shop = await Shop.get_or_none(id=int(user.state.replace('change_shop_photo_', '')))
