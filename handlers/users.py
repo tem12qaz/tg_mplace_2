@@ -369,7 +369,7 @@ async def listen_handler(message: types.Message):
         media = None
         if '_' in user.state:
             media = types.MediaGroup()
-            for i in user.state.replace('mail_').split('_'):
+            for i in user.state.replace('mail_', '').split('_'):
                 photo = await Photo.get_or_none(id=int(i))
                 if photo:
                     media.attach_photo(InputFile(io.BytesIO(photo.source)))
