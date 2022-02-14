@@ -59,13 +59,13 @@ class Review(Model):
 class Category(Model):
     id = fields.IntField(pk=True)
     name = fields.CharField(100)
-    channel = fields.CharField(32)
+    channel = fields.CharField(32, null=True)
 
 
 class ServiceCategory(Model):
     id = fields.IntField(pk=True)
     name = fields.CharField(100)
-    channel = fields.CharField(32)
+    channel = fields.CharField(32, null=True)
 
 
 class CategoryShop(Model):
