@@ -702,6 +702,82 @@ async def handle_photo(message: types.Message):
         await message.delete()
 
 
+@dp.message_handler(content_types=['document'])
+async def handle_docs(message: types.Message):
+    user = await TelegramUser.get_or_none(telegram_id=message.chat.id)
+    if user is None:
+        return
+
+    photo = message.document[-1]
+    print(message.document)
+    print(photo)
+    name = f'files/{message.from_user.id}_{photo.file_id}.jpg'
+    await photo.download(destination_file=name)
+
+    photo_binary = open(name, 'rb').read()
+    os.remove(name)
+
+    if 'listen_shop_photo_' in user.state:
+        shop = await Shop.get_or_none(id=int(user.state.replace('listen_shop_photo_', '')))
+        if shop is None:
+            return
+
+        shop.photo = photo_binary
+        await shop.save()
+
+        user.state = ''
+        await user.save()
+
+        await message.answer(
+            SHOP_CREATED_MESSAGE,
+            reply_markup=seller_main_menu_keyboard
+        )
+
+        await bot.send_photo(
+            ADMIN_ID,
+            photo=photo_binary,
+            caption=ADMIN_CREATE_SHOP_MESSAGE.format(
+                name=shop.name, description=shop.description
+            ),
+            reply_markup=get_admin_shop_keyboard(shop)
+        )
+
+    elif 'change_shop_photo_' in user.state:
+        shop = await Shop.get_or_none(id=int(user.state.replace('change_shop_photo_', '')))
+        if shop is None:
+            return
+
+        await message.answer(
+            SHOP_CREATED_MESSAGE,
+            reply_markup=get_go_seller_shop_info_keyboard(shop)
+        )
+
+        await bot.send_photo(
+            ADMIN_ID,
+            photo=photo_binary,
+            caption=ADMIN_EDIT_SHOP_PHOTO_MESSAGE,
+            reply_markup=get_admin_edit_shop_keyboard(shop, 'photo')
+        )
+
+    elif 'listen_product_photo_' in user.state or 'listen_product_delphoto_' in user.state:
+        product = await Product.get_or_none(id=user.state.split('_')[-1])
+        if product is None:
+            return
+
+        if 'listen_product_delphoto_' in user.state:
+            photos = await product.photos.all()
+            for photo in photos:
+                await photo.delete()
+            user.state = f'listen_product_photo_{product.id}'
+            await user.save()
+
+        if len(await product.photos.all()) < 3:
+            await Photo.create(source=photo_binary, product=product)
+
+    else:
+        await message.delete()
+
+
 @dp.callback_query_handler(admin_callback.filter())
 @dp.throttled(rate=FLOOD_RATE)
 async def admin_handler(callback: types.CallbackQuery, callback_data):
