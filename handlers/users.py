@@ -724,7 +724,7 @@ async def handle_photo(message: types.Message):
         if len(user.state.split('_')) > 10:
             await message.delete()
             return
-
+        print(user.state)
         await asyncio.sleep(len(user.state.split('_')) * 0.1)
 
         photo = await Photo.create(source=photo_binary)
