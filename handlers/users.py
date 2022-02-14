@@ -388,6 +388,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
 @dp.message_handler()
 @dp.throttled(rate=FLOOD_RATE)
 async def listen_handler(message: types.Message):
+    print('e')
     message_ = message
     user = await TelegramUser.get_or_none(telegram_id=message.from_user.id)
     if user is None:
@@ -448,7 +449,6 @@ async def listen_handler(message: types.Message):
 
             if bid.field4:
                 bid.field5 = message.text[:1024]
-                text = FORM_SAVED_MESSAGE
                 await send_deal(bid)
                 return
 
@@ -490,7 +490,7 @@ async def listen_handler(message: types.Message):
             user.state = f'create_bid_{bid.id}'
             await user.save()
             await message.answer(
-                CREATE_FORM2_MESSAGE,
+                SEND_MESSAGE + form.field2,
                 reply_markup=get_back_shop_keyboard(await form.shop)
             )
 
