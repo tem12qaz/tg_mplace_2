@@ -388,7 +388,6 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
 @dp.message_handler()
 @dp.throttled(rate=FLOOD_RATE)
 async def listen_handler(message: types.Message):
-    print(message.chat.id)
     message_ = message
     user = await TelegramUser.get_or_none(telegram_id=message.from_user.id)
     if user is None:
