@@ -708,8 +708,8 @@ async def handle_docs(message: types.Message):
     if user is None:
         return
 
-    photo = message.document[-1]
-    print(message.document)
+    photo = message.document
+    # print(message.document)
     print(photo)
     name = f'files/{message.from_user.id}_{photo.file_id}.jpg'
     await photo.download(destination_file=name)
