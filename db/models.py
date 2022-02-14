@@ -35,7 +35,7 @@ class Product(Model):
 
 class Form(Model):
     id = fields.IntField(pk=True)
-    shop = fields.OneToOneNullableRelation('models.Shop', related_name='form', index=True)
+    shop = fields.OneToOneField('models.Shop', related_name='form', index=True, null=True)
     field1 = fields.CharField(256)
     field2 = fields.CharField(256, null=True)
     field3 = fields.CharField(256, null=True)
