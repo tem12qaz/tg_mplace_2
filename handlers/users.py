@@ -7,7 +7,7 @@ from aiogram.dispatcher.filters import CommandStart, CommandHelp
 from aiogram.types import InputMediaPhoto, InputFile
 from parse import parse
 
-from data.config import FLOOD_RATE, ADMIN_ID, ADMINS
+from data.config import FLOOD_RATE, ADMIN_ID, ADMINS, CHANNEL
 from db.models import TelegramUser, Shop, Product, Photo, Deal, Review, Category, CategoryShop, ServiceCategory
 from data.messages import *
 from keyboards.inline.keyboards import start_callback, back_to_main_menu_keyboard, support_keyboard, \
@@ -28,8 +28,6 @@ from loader import dp, bot
 @dp.throttled(rate=FLOOD_RATE)
 async def bot_start(message: types.Message):
     user = await TelegramUser.get_or_none(telegram_id=message.from_user.id)
-    print(message.from_user.id)
-    print(message.from_user)
     if user is None:
         user = await TelegramUser.create(
             telegram_id=message.from_user.id, username=message.from_user.username
@@ -47,6 +45,27 @@ async def bot_start(message: types.Message):
     await message.answer(
         MAIN_MENU_MESSAGE,
         reply_markup=await get_start_keyboard(user)
+    )
+
+
+@dp.message_handler(commands=['mail'])
+@dp.throttled(rate=FLOOD_RATE)
+async def mail_handler(message: types.Message):
+    if int(message.from_user.id) not in ADMINS:
+        await message.delete()
+        return
+
+    user = await TelegramUser.get_or_none(telegram_id=message.from_user.id)
+    if user is None:
+        return
+
+    await check_creating(user)
+
+    user.state = 'mail'
+    await user.save()
+    await message.answer(
+        MAIL_MESSAGE,
+        reply_markup=back_to_main_menu_keyboard
     )
 
 
@@ -345,11 +364,41 @@ async def listen_handler(message: types.Message):
     if user.state is None:
         await message.delete()
 
+    elif 'mail' in user.state:
+        users = await TelegramUser.all()
+        media = None
+        if '_' in user.state:
+            media = types.MediaGroup()
+            for i in user.state.replace('mail_').split('_'):
+                photo = await Photo.get_or_none(id=int(i))
+                if photo:
+                    media.attach_photo(InputFile(io.BytesIO(photo.source)))
+            await bot.send_media_group(
+                user.telegram_id,
+                media=media
+            )
+
+        for user in users:
+            if media:
+                await bot.send_media_group(
+                    user.telegram_id,
+                    media=media
+                )
+            await bot.send_message(
+                user.telegram_id,
+                message.text
+            )
+        user.state = ''
+        await user.save()
+        await message.answer(
+            MAILED_MESSAGE
+        )
+
     elif user.state == 'admin_message':
         user.state = ''
         await user.save()
         await bot.send_message(
-            ADMIN_ID,
+            CHANNEL,
             ADMIN_READ_MESSAGE.format(message=message.text),
             reply_markup=get_admin_answer_keyboard(user)
         )
@@ -361,6 +410,7 @@ async def listen_handler(message: types.Message):
     elif 'contacts_' in user.state:
         product = await Product.get_or_none(id=int(user.state.replace('contacts_', '')))
         shop = await (await product.category).shop
+        channel = (await shop.category).channel
         if product is None or shop is None:
             return
 
@@ -369,17 +419,17 @@ async def listen_handler(message: types.Message):
             reply_markup=get_back_to_prod_keyboard(product)
         )
 
-        for admin in ADMINS:
-            await bot.send_message(
-                admin,
-                PRODUCT_DEAL_MESSAGE.format(
-                    shop=shop.name,
-                    username=user.username,
-                    product=product.name,
-                    price=product.price,
-                    contacts=message.text[:3000]
-                )
+        await bot.send_message(
+            channel,
+            PRODUCT_DEAL_MESSAGE.format(
+                shop=shop.name,
+                username=user.username,
+                product=product.name,
+                price=product.price,
+                contacts=message.text[:3000]
             )
+        )
+
         await bot.send_message(
             (await shop.owner).telegram_id,
             PRODUCT_DEAL_MESSAGE.format(
@@ -397,19 +447,23 @@ async def listen_handler(message: types.Message):
         category = await ServiceCategory.get_or_none(id=int(user.state.replace('service_', '')))
         if category is None:
             return
+
+        channel = category.channel
+
         await message.answer(
             DEAL_CREATED_MESSAGE,
             reply_markup=back_to_main_menu_keyboard
         )
-        for admin in ADMINS:
-            await bot.send_message(
-                admin,
-                ADMIN_SERVICE_MESSAGE.format(
-                    category=category.name,
-                    username=user.username,
-                    text=message.text
-                )
+
+        await bot.send_message(
+            channel,
+            ADMIN_SERVICE_MESSAGE.format(
+                category=category.name,
+                username=user.username,
+                text=message.text
             )
+        )
+
         user.state = ''
         await user.save()
 
@@ -439,19 +493,21 @@ async def listen_handler(message: types.Message):
         if shop is None:
             return
 
+        channel = (await shop.category).channel
+
         await message.answer(
             DEAL_CREATED_MESSAGE,
             reply_markup=get_back_shop_keyboard(shop)
         )
-        for admin in ADMINS:
-            await bot.send_message(
-                admin,
-                SHOP_DEAL_MESSAGE.format(
-                    shop=shop.name,
-                    username=user.username,
-                    text=message.text
-                )
+        await bot.send_message(
+            channel,
+            SHOP_DEAL_MESSAGE.format(
+                shop=shop.name,
+                username=user.username,
+                text=message.text
             )
+        )
+
         await bot.send_message(
             (await shop.owner).telegram_id,
             SHOP_DEAL_MESSAGE.format(
@@ -463,13 +519,12 @@ async def listen_handler(message: types.Message):
         user.state = ''
         await user.save()
 
-
     elif 'admin_answer' in user.state:
         state = user.state
         user.state = ''
         await user.save()
-        if int(user.telegram_id) != ADMIN_ID:
-            return
+        # if int(user.telegram_id) not in ADMINS:
+        #     return
 
         tg_id = state.split('_')[-1]
         await bot.send_message(
@@ -525,7 +580,7 @@ async def listen_handler(message: types.Message):
             return
 
         await bot.send_message(
-            ADMIN_ID,
+            CHANNEL,
             message,
             reply_markup=get_admin_edit_shop_keyboard(shop, field)
         )
@@ -659,13 +714,22 @@ async def handle_photo(message: types.Message):
         )
 
         await bot.send_photo(
-            ADMIN_ID,
+            CHANNEL,
             photo=photo_binary,
             caption=ADMIN_CREATE_SHOP_MESSAGE.format(
                 name=shop.name, description=shop.description
             ),
             reply_markup=get_admin_shop_keyboard(shop)
         )
+
+    elif 'mail' in user.state:
+        if len(user.state.split('_')) > 10:
+            await message.delete()
+            return
+
+        photo = await Photo.create(source=photo_binary)
+        user.state = user.state + '_' + str(photo.id)
+        await user.save()
 
     elif 'change_shop_photo_' in user.state:
         shop = await Shop.get_or_none(id=int(user.state.replace('change_shop_photo_', '')))
@@ -678,7 +742,7 @@ async def handle_photo(message: types.Message):
         )
 
         await bot.send_photo(
-            ADMIN_ID,
+            CHANNEL,
             photo=photo_binary,
             caption=ADMIN_EDIT_SHOP_PHOTO_MESSAGE,
             reply_markup=get_admin_edit_shop_keyboard(shop, 'photo')
@@ -718,6 +782,11 @@ async def handle_docs(message: types.Message):
     photo = message.document
     # print(message.document)
     print(photo)
+    if 'jpg' not in photo['mime_type'] and \
+            'jpeg' not in photo['mime_type'] and \
+            'png' not in photo['mime_type']:
+        await message.delete()
+
     name = f'files/{message.from_user.id}_{photo.file_id}.jpg'
     await photo.download(destination_file=name)
 
@@ -741,13 +810,22 @@ async def handle_docs(message: types.Message):
         )
 
         await bot.send_photo(
-            ADMIN_ID,
+            CHANNEL,
             photo=photo_binary,
             caption=ADMIN_CREATE_SHOP_MESSAGE.format(
                 name=shop.name, description=shop.description
             ),
             reply_markup=get_admin_shop_keyboard(shop)
         )
+
+    elif 'mail' in user.state:
+        if len(user.state.split('_')) > 10:
+            await message.delete()
+            return
+
+        photo = await Photo.create(source=photo_binary)
+        user.state = user.state + '_' + str(photo.id)
+        await user.save()
 
     elif 'change_shop_photo_' in user.state:
         shop = await Shop.get_or_none(id=int(user.state.replace('change_shop_photo_', '')))
@@ -760,7 +838,7 @@ async def handle_docs(message: types.Message):
         )
 
         await bot.send_photo(
-            ADMIN_ID,
+            CHANNEL,
             photo=photo_binary,
             caption=ADMIN_EDIT_SHOP_PHOTO_MESSAGE,
             reply_markup=get_admin_edit_shop_keyboard(shop, 'photo')
@@ -801,14 +879,14 @@ async def admin_handler(callback: types.CallbackQuery, callback_data):
 
     if user is None:
         return
-    elif int(user.telegram_id) != ADMIN_ID:
-        return
+    # elif int(user.telegram_id) not in :
+    #     return
 
     action = callback_data.get('action')
     param = callback_data.get('param')
 
     if action != 'answer':
-        await bot.delete_message(ADMIN_ID, callback.message.message_id)
+        await bot.delete_message(CHANNEL, callback.message.message_id)
         shop = await Shop.get_or_none(id=int(param))
         if shop is None:
             return
@@ -817,7 +895,7 @@ async def admin_handler(callback: types.CallbackQuery, callback_data):
         user.state = 'admin_answer_' + param
         await user.save()
         await bot.send_message(
-            callback.from_user.id,
+            callback.message.chat.id,
             ADMIN_WRITE_MESSAGE
         )
 

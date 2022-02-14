@@ -36,7 +36,7 @@ class Product(Model):
 class Photo(Model):
     id = fields.IntField(pk=True)
     source = fields.BinaryField()
-    product = fields.ForeignKeyField('models.Product', related_name='photos', index=True)
+    product = fields.ForeignKeyField('models.Product', related_name='photos', index=True, null=True)
 
 
 class Deal(Model):
@@ -59,11 +59,13 @@ class Review(Model):
 class Category(Model):
     id = fields.IntField(pk=True)
     name = fields.CharField(100)
+    channel = fields.CharField(32)
 
 
 class ServiceCategory(Model):
     id = fields.IntField(pk=True)
     name = fields.CharField(100)
+    channel = fields.CharField(32)
 
 
 class CategoryShop(Model):

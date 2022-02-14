@@ -21,9 +21,9 @@ class HomeAdminView(AdminMixin, AdminIndexView):
 
 
 class CategoryView(AdminMixin, ModelView):
-    column_list = ('id', 'name')
+    column_list = ('id', 'name', 'channel')
 
-    form_columns = ('name',)
+    form_columns = ('name', 'channel')
 
 
 class LogoutView(AdminMixin, BaseView):

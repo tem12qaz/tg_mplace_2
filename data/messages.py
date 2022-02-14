@@ -36,7 +36,7 @@ INPUT_SHOP_NAME_MESSAGE = '''Введите название магазина'''
 
 INPUT_SHOP_DESCRIPTION_MESSAGE = '''Введите описание магазина'''
 
-INPUT_SHOP_PHOTO_MESSAGE = '''Отправьте логитип магазина'''
+INPUT_SHOP_PHOTO_MESSAGE = '''Отправьте логитип магазина в формате jpg или png'''
 
 SHOP_CREATED_MESSAGE = '''Магазин отправлен на модерацию'''
 
@@ -70,7 +70,7 @@ INFO_SHOP_MESSAGE = '''Магазин
 
 EDIT_NAME_MESSAGE = '''Введите новое название'''
 EDIT_DESCRIPTION_MESSAGE = '''Введите новое описание'''
-EDIT_PHOTO_MESSAGE = '''Отправьте новое фото'''
+EDIT_PHOTO_MESSAGE = '''Отправьте новое фото в формате jpg или png'''
 
 ADMIN_EDIT_SHOP_NAME_MESSAGE = '''<b>Модерация магазина</b>
 
@@ -117,7 +117,8 @@ REVIEW_MESSAGE = '''Отзывы'''
 ADD_PRODUCT_MESSAGE = '''Введите название продукта'''
 ADD_PRODUCT_DESCRIPTION_MESSAGE = '''Введите описание продукта'''
 ADD_PRODUCT_PRICE_MESSAGE = '''Введите цену продукта в рублях'''
-ADD_PRODUCT_PHOTO_MESSAGE = '''Отправте до 3 фотографий продукта, после этого напишите любое сообщение'''
+ADD_PRODUCT_PHOTO_MESSAGE = '''Отправте до 3 фотографий продукта в формате jpg или png,
+ после этого напишите любое сообщение'''
 
 SELLER_INFO_PRODUCT_MESSAGE = '''<b>Ваш товар</b>
 
@@ -208,6 +209,12 @@ CONTACTS_MESSAGE = '''Заказ оформлен
 REVIEWS_MESSAGE = '''Оценка <b>{rating}/5</b>
 {text}
 '''
+
+MAIL_MESSAGE = '''Отправьте до 10 фотографий (если требуется),
+после чего отправьте текст для рассылки'''
+
+
+MAILED_MESSAGE = '''Рассылка отправлена'''
 
 
 
