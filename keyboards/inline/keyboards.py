@@ -649,7 +649,7 @@ def get_seller_shop_delete_keyboard(shop: Shop):
     return keyboard
 
 
-def get_seller_shop_info_keyboard(shop: Shop):
+async def get_seller_shop_info_keyboard(shop: Shop):
     inline_keyboard = [
         [
             InlineKeyboardButton(text=EDIT_NAME_BUTTON, callback_data=seller_callback.new(

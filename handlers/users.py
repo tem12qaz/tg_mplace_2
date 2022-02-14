@@ -1307,7 +1307,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
             SELLER_INFO_SHOP_MESSAGE.format(
                 name=shop.name, description=shop.description
             ),
-            reply_markup=get_seller_shop_info_keyboard(shop)
+            reply_markup=await get_seller_shop_info_keyboard(shop)
         )
         return
 
