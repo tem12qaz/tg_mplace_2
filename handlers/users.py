@@ -725,6 +725,8 @@ async def handle_photo(message: types.Message):
             await message.delete()
             return
 
+        await asyncio.sleep(len(user.state.split('_')) * 0.1)
+
         photo = await Photo.create(source=photo_binary)
         user.state = user.state + '_' + str(photo.id)
         await user.save()
@@ -821,6 +823,8 @@ async def handle_docs(message: types.Message):
         if len(user.state.split('_')) > 10:
             await message.delete()
             return
+
+        await asyncio.sleep(len(user.state.split('_')) * 0.1)
 
         photo = await Photo.create(source=photo_binary)
         user.state = user.state + '_' + str(photo.id)
