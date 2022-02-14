@@ -1,5 +1,6 @@
 import io
 import os
+import asyncio
 
 from aiogram import types
 from aiogram.dispatcher.filters import CommandStart, CommandHelp
@@ -683,17 +684,23 @@ async def handle_photo(message: types.Message):
             reply_markup=get_admin_edit_shop_keyboard(shop, 'photo')
         )
 
+    user = await TelegramUser.get_or_none(telegram_id=message.chat.id)
+    if user is None:
+        return
+
     elif 'listen_product_photo_' in user.state or 'listen_product_delphoto_' in user.state:
         product = await Product.get_or_none(id=user.state.split('_')[-1])
         if product is None:
             return
 
         if 'listen_product_delphoto_' in user.state:
+            user.state = f'listen_product_photo_{product.id}'
+            await user.save()
             photos = await product.photos.all()
             for photo in photos:
                 await photo.delete()
-            user.state = f'listen_product_photo_{product.id}'
-            await user.save()
+        else:
+            await asyncio.sleep(1)
 
         if len(await product.photos.all()) < 3:
             await Photo.create(source=photo_binary, product=product)
@@ -764,12 +771,19 @@ async def handle_docs(message: types.Message):
         if product is None:
             return
 
+        user = await TelegramUser.get_or_none(telegram_id=message.chat.id)
+        if user is None:
+            return
+
         if 'listen_product_delphoto_' in user.state:
+            user.state = f'listen_product_photo_{product.id}'
+            await user.save()
             photos = await product.photos.all()
             for photo in photos:
                 await photo.delete()
-            user.state = f'listen_product_photo_{product.id}'
-            await user.save()
+
+        else:
+            await asyncio.sleep(1)
 
         if len(await product.photos.all()) < 3:
             print('wedewd')
