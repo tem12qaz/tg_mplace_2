@@ -366,16 +366,18 @@ async def listen_handler(message: types.Message):
 
     elif 'mail' in user.state:
         users = await TelegramUser.all()
-        media = None
+        photos = []
         if '_' in user.state:
-            media = types.MediaGroup()
             for i in user.state.replace('mail_', '').split('_'):
                 photo = await Photo.get_or_none(id=int(i))
                 if photo:
-                    media.attach_photo(InputFile((io.BytesIO(photo.source)).seek(0)))
+                    photos.append(photo)
 
         for user in users:
-            if media:
+            if '_' in user.state:
+                media = types.MediaGroup()
+                for photo in photos:
+                    media.attach_photo(InputFile((io.BytesIO(photo.source))))
                 await bot.send_media_group(
                     user.telegram_id,
                     media=media
