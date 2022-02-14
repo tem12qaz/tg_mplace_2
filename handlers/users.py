@@ -335,7 +335,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
                     reply_markup=get_back_shop_keyboard(shop)
                 )
 
-        elif 'shop_field_' is select:
+        elif 'shop_field_' in select:
             form = await shop.form
             if form is None:
                 return
