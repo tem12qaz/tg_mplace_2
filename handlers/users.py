@@ -711,7 +711,6 @@ async def handle_docs(message: types.Message):
     photo = message.document
     # print(message.document)
     print(photo)
-    print('-------------------')
     name = f'files/{message.from_user.id}_{photo.file_id}.jpg'
     await photo.download(destination_file=name)
 
@@ -773,6 +772,7 @@ async def handle_docs(message: types.Message):
             await user.save()
 
         if len(await product.photos.all()) < 3:
+            print('wedewd')
             await Photo.create(source=photo_binary, product=product)
 
     else:
