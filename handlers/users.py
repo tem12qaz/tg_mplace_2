@@ -445,29 +445,33 @@ async def listen_handler(message: types.Message):
                 await bid_.delete()
 
             keyboard = get_back_shop_keyboard(shop)
-            if bid.field1:
-                bid.field2 = message.text[:1024]
-                text = SEND_MESSAGE + form.field3
-                if not form.field3:
-                    await send_deal(bid)
-                    return
-            elif bid.field2:
-                bid.field3 = message.text[:1024]
-                text = SEND_MESSAGE + form.field4
-                if not form.field4:
-                    await send_deal(bid)
-                    return
+
+            if bid.field4:
+                bid.field5 = message.text[:1024]
+                text = FORM_SAVED_MESSAGE
+                await send_deal(bid)
+                return
+
             elif bid.field3:
                 bid.field4 = message.text[:1024]
                 text = SEND_MESSAGE + form.field5
                 if not form.field5:
                     await send_deal(bid)
                     return
-            elif bid.field4:
-                bid.field5 = message.text[:1024]
-                text = FORM_SAVED_MESSAGE
-                await send_deal(bid)
-                return
+
+            elif bid.field2:
+                bid.field3 = message.text[:1024]
+                text = SEND_MESSAGE + form.field4
+                if not form.field4:
+                    await send_deal(bid)
+                    return
+
+            elif bid.field1:
+                bid.field2 = message.text[:1024]
+                text = SEND_MESSAGE + form.field3
+                if not form.field3:
+                    await send_deal(bid)
+                    return
             else:
                 return
 
@@ -500,21 +504,21 @@ async def listen_handler(message: types.Message):
                 return
 
             keyboard = get_create_form_keyboard(shop, form)
-            if form.field1:
-                form.field2 = message.text[:256]
-                text = CREATE_FORM3_MESSAGE
-            elif form.field2:
-                form.field3 = message.text[:256]
-                text = CREATE_FORM4_MESSAGE
-            elif form.field3:
-                form.field4 = message.text[:256]
-                text = CREATE_FORM5_MESSAGE
-            elif form.field4:
+            if form.field4:
                 form.field5 = message.text[:256]
                 text = FORM_SAVED_MESSAGE
                 keyboard = get_go_seller_shop_info_keyboard(shop)
                 user.state = ''
                 await user.save()
+            elif form.field3:
+                form.field4 = message.text[:256]
+                text = CREATE_FORM5_MESSAGE
+            elif form.field2:
+                form.field3 = message.text[:256]
+                text = CREATE_FORM4_MESSAGE
+            elif form.field1:
+                form.field2 = message.text[:256]
+                text = CREATE_FORM3_MESSAGE
             else:
                 return
 
@@ -1264,7 +1268,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
         message = DELETED_MESSAGE
         keyboard = get_go_seller_shop_info_keyboard(shop)
 
-    elif action == 'save_form_':
+    elif 'save_form_' in action:
         user.state = ''
         await user.save()
         message = FORM_SAVED_MESSAGE
