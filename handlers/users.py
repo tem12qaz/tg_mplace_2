@@ -723,7 +723,9 @@ async def handle_photo(message: types.Message):
         )
 
     elif 'mail' in user.state:
+        print('x')
         if len(user.state.split('_')) > 10:
+            print('t')
             await message.delete()
             return
 
