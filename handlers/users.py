@@ -8,7 +8,8 @@ from aiogram.types import InputMediaPhoto, InputFile
 from parse import parse
 
 from data.config import FLOOD_RATE, ADMIN_ID, ADMINS, CHANNEL
-from db.models import TelegramUser, Shop, Product, Photo, Deal, Review, Category, CategoryShop, ServiceCategory
+from db.models import TelegramUser, Shop, Product, Photo, Deal, Review, Category, CategoryShop, ServiceCategory, Form, \
+    Bid
 from data.messages import *
 from keyboards.inline.keyboards import start_callback, back_to_main_menu_keyboard, support_keyboard, \
     get_admin_answer_keyboard, admin_callback, get_start_keyboard, get_seller_keyboard, seller_callback, \
@@ -20,7 +21,8 @@ from keyboards.inline.keyboards import start_callback, back_to_main_menu_keyboar
     get_seller_product_info_keyboard, get_seller_add_photo_product_keyboard, get_delete_product_keyboard, \
     get_service_categories_keyboard, get_shops_keyboard, get_shop_keyboard, get_back_shop_keyboard, \
     get_shops_cats_keyboard, get_shops_prods_keyboard, get_prod_keyboard, get_categories_keyboard, get_review_keyboard, \
-    get_back_to_prod_keyboard, get_reviews_keyboard
+    get_back_to_prod_keyboard, get_reviews_keyboard, get_confirm_delete_form_keyboard, get_create_form_keyboard, \
+    get_form_shop_keyboard
 from loader import dp, bot
 
 
@@ -308,7 +310,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
         if shop is None:
             return
 
-        if 'shop_deal_' in select:
+        if 'shop_free_' in select:
             user.state = f'shop_deal_{shop.id}'
             await user.save()
             await bot.edit_message_text(
@@ -317,7 +319,35 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
                 callback.message.message_id,
                 reply_markup=get_back_shop_keyboard(shop)
             )
+        elif 'shop_deal_' in select:
+            if await shop.form:
+                await bot.edit_message_text(
+                    SELECT_FORM_MESSAGE,
+                    user.telegram_id,
+                    callback.message.message_id,
+                    reply_markup=get_form_shop_keyboard(shop)
+                )
+            else:
+                await bot.edit_message_text(
+                    SERVICE_DEAL_MESSAGE,
+                    user.telegram_id,
+                    callback.message.message_id,
+                    reply_markup=get_back_shop_keyboard(shop)
+                )
 
+        elif 'shop_field_' is select:
+            form = await shop.form
+            if form is None:
+                return
+
+            user.state = f'{form.id}_create_bid'
+            await user.save()
+            await bot.edit_message_text(
+                SEND_MESSAGE + form.field1,
+                user.telegram_id,
+                callback.message.message_id,
+                reply_markup=get_back_shop_keyboard(shop)
+            )
         elif 'shop_cats_' in select:
             await bot.edit_message_text(
                 SELECT_CAT_MESSAGE,
@@ -327,6 +357,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
             )
 
         else:
+            await check_creating(user)
             message = INFO_SHOP_MESSAGE.format(
                 name=shop.name, description=shop.description
             )
@@ -348,7 +379,6 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
                 message,
                 reply_markup=await get_shop_keyboard(shop)
             )
-
     else:
         return
 
@@ -363,6 +393,147 @@ async def listen_handler(message: types.Message):
 
     if user.state is None:
         await message.delete()
+
+    elif 'create_bid' in user.state:
+        if 'create_bid_' in user.state:
+            bid = await Bid.get_or_none(id=int(user.state.split('_')[-1]))
+            if bid is None:
+                return
+            form = await bid.form
+            if form is None:
+                return
+            shop = await form.shop
+            if shop is None:
+                return
+
+            async def send_deal(bid_):
+                user.state = ''
+                await user.save()
+                channel_ = (await shop.category).channel
+                text_ = ''
+                fields = form.fields()
+                for field_ in fields:
+                    if field_:
+                        text_ += BID_ROW.format(
+                            field=field_,
+                            value=bid_.fields()[fields.index(field_)]
+                        )
+
+                await message.answer(
+                    DEAL_CREATED_MESSAGE,
+                    reply_markup=get_back_shop_keyboard(shop)
+                )
+                await bot.send_message(
+                    channel_,
+                    SHOP_DEAL_MESSAGE.format(
+                        shop=shop.name,
+                        username=user.username,
+                        text=text_
+                    )
+                )
+
+                await bot.send_message(
+                    (await shop.owner).telegram_id,
+                    SHOP_DEAL_MESSAGE.format(
+                        shop=shop.name,
+                        username=user.username,
+                        text=text_
+                    )
+                )
+                await bid_.delete()
+
+            keyboard = get_back_shop_keyboard(shop)
+            if bid.field1:
+                bid.field2 = message.text[:1024]
+                text = SEND_MESSAGE + form.field3
+                if not form.field3:
+                    await send_deal(bid)
+                    return
+            elif bid.field2:
+                bid.field3 = message.text[:1024]
+                text = SEND_MESSAGE + form.field4
+                if not form.field4:
+                    await send_deal(bid)
+                    return
+            elif bid.field3:
+                bid.field4 = message.text[:1024]
+                text = SEND_MESSAGE + form.field5
+                if not form.field5:
+                    await send_deal(bid)
+                    return
+            elif bid.field4:
+                bid.field5 = message.text[:1024]
+                text = FORM_SAVED_MESSAGE
+                await send_deal(bid)
+                return
+            else:
+                return
+
+            await bid.save()
+            await message.answer(
+                text,
+                reply_markup=keyboard
+            )
+
+        else:
+            form_id = user.state.split('_')[0]
+            form = await Form.get_or_none(id=int(form_id))
+            if form is None:
+                return
+            bid = await Bid.create(form=form, field1=message.text[:1024])
+            user.state = f'create_bid_{bid.id}'
+            await user.save()
+            await message.answer(
+                CREATE_FORM2_MESSAGE,
+                reply_markup=get_back_shop_keyboard(await form.shop)
+            )
+
+    elif 'create_form' in user.state:
+        if 'create_form_' in user.state:
+            form = await Form.get_or_none(id=int(user.state.split('_')[-1]))
+            if form is None:
+                return
+            shop = await form.shop
+            if shop is None:
+                return
+
+            keyboard = get_create_form_keyboard(shop, form)
+            if form.field1:
+                form.field2 = message.text[:256]
+                text = CREATE_FORM3_MESSAGE
+            elif form.field2:
+                form.field3 = message.text[:256]
+                text = CREATE_FORM4_MESSAGE
+            elif form.field3:
+                form.field4 = message.text[:256]
+                text = CREATE_FORM5_MESSAGE
+            elif form.field4:
+                form.field5 = message.text[:256]
+                text = FORM_SAVED_MESSAGE
+                keyboard = get_go_seller_shop_info_keyboard(shop)
+                user.state = ''
+                await user.save()
+            else:
+                return
+
+            await form.save()
+            await message.answer(
+                text,
+                reply_markup=keyboard
+            )
+
+        else:
+            shop_id = user.state.split('_')[0]
+            shop = await Shop.get_or_none(id=int(shop_id))
+            if shop is None:
+                return
+            form = await Form.create(shop=shop, field1=message.text[:256])
+            user.state = f'create_form_{form.id}'
+            await user.save()
+            await message.answer(
+                CREATE_FORM2_MESSAGE,
+                reply_markup=get_create_form_keyboard(shop, form)
+            )
 
     elif 'mail' in user.state:
         users = await TelegramUser.all()
@@ -781,6 +952,7 @@ async def handle_docs(message: types.Message):
             'jpeg' not in photo['mime_type'] and \
             'png' not in photo['mime_type']:
         await message.delete()
+        return
 
     name = f'files/{message.from_user.id}_{photo.file_id}.jpg'
     await photo.download(destination_file=name)
@@ -1073,6 +1245,29 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
             )
             return
 
+    elif action == 'create_form':
+        user.state = f'{shop.id}_create_form'
+        await user.save()
+        message = CREATE_FORM_MESSAGE
+        keyboard = get_go_seller_shop_info_keyboard(shop)
+
+    elif action == 'del_form':
+        await callback.answer(DELETE_PRODUCT_ALERT, show_alert=True)
+        message = DELETE_CONFIRM_MESSAGE
+        keyboard = get_confirm_delete_form_keyboard(shop)
+
+    elif action == 'confirm_delete_form':
+        form = await shop.form
+        await form.delete()
+        message = DELETED_MESSAGE
+        keyboard = get_go_seller_shop_info_keyboard(shop)
+
+    elif action == 'save_form_':
+        user.state = ''
+        await user.save()
+        message = FORM_SAVED_MESSAGE
+        keyboard = get_go_seller_shop_info_keyboard(shop)
+
     elif action == 'open_shop':
         message = CREATE_SHOP_TYPE_MESSAGE
         keyboard = create_type_shop_keyboard
@@ -1101,9 +1296,7 @@ async def seller_handler(callback: types.CallbackQuery, callback_data):
         keyboard = seller_main_menu_keyboard
 
     elif action == 'info':
-        user.state = ''
-        await user.save()
-
+        await check_creating(user)
         await callback.answer()
         await bot.send_photo(
             user.telegram_id,
@@ -1200,6 +1393,24 @@ async def check_creating(user):
         if product is None:
             return
         await product.delete()
+
+    elif 'create_form_' in user.state:
+        form_id = int(user.state.split('_')[-1])
+        form = await Form.get_or_none(id=form_id)
+        user.state = ''
+        await user.save()
+        if form is None:
+            return
+        await form.delete()
+
+    elif 'create_bid_' in user.state:
+        bid_id = int(user.state.split('_')[-1])
+        bid = await Bid.get_or_none(id=bid_id)
+        user.state = ''
+        await user.save()
+        if bid is None:
+            return
+        await bid.delete()
 
     else:
         user.state = ''

@@ -33,6 +33,32 @@ class Product(Model):
     description = fields.TextField()
 
 
+class Form(Model):
+    id = fields.IntField(pk=True)
+    shop = fields.OneToOneNullableRelation('models.Shop', related_name='form', index=True)
+    field1 = fields.CharField(256)
+    field2 = fields.CharField(256, null=True)
+    field3 = fields.CharField(256, null=True)
+    field4 = fields.CharField(256, null=True)
+    field5 = fields.CharField(256, null=True)
+
+    def fields(self):
+        return self.field1, self.field2, self.field3, self.field4, self.field5
+
+
+class Bid(Model):
+    id = fields.IntField(pk=True)
+    form = fields.ForeignKeyField('models.Form', related_name='bids')
+    field1 = fields.CharField(1024)
+    field2 = fields.CharField(1024, null=True)
+    field3 = fields.CharField(1024, null=True)
+    field4 = fields.CharField(1024, null=True)
+    field5 = fields.CharField(1024, null=True)
+
+    def fields(self):
+        return self.field1, self.field2, self.field3, self.field4, self.field5
+
+
 class Photo(Model):
     id = fields.IntField(pk=True)
     source = fields.BinaryField()

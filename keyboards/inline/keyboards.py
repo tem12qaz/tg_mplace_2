@@ -4,7 +4,7 @@ from aiogram.utils.callback_data import CallbackData
 
 from data.buttons import *
 from data.messages import CREATE_REVIEW_MESSAGE, REVIEW_MESSAGE
-from db.models import TelegramUser, Category, Shop, CategoryShop, Product, ServiceCategory, Review
+from db.models import TelegramUser, Category, Shop, CategoryShop, Product, ServiceCategory, Review, Form
 
 start_callback = CallbackData("main_menu", 'select')
 admin_callback = CallbackData("admin", 'action', 'param')
@@ -116,6 +116,25 @@ def get_review_keyboard(product: Product):
                 InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(
                     select=f'shop_prod_{product.id}'
                 ))
+            ]
+        ]
+    )
+    return keyboard
+
+
+def get_form_shop_keyboard(shop: Shop):
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=FREE_DEAL_BUTTON, callback_data=start_callback.new(
+                    select=f'shop_free_{shop.id}'
+                )),
+                InlineKeyboardButton(text=FORM_DEAL_BUTTON, callback_data=start_callback.new(
+                    select=f'shop_field_{shop.id}'
+                ))
+            ],
+            [
+                InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(select=f'shop_{shop.id}'))
             ]
         ]
     )
@@ -447,6 +466,42 @@ def get_go_seller_shop_info_keyboard(shop: Shop):
     return keyboard
 
 
+def get_confirm_delete_form_keyboard(shop: Shop):
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=DELETE_BUTTON, callback_data=seller_callback.new(
+                    action='confirm_delete_form', shop=str(shop.id)
+                ))
+            ],
+            [
+                InlineKeyboardButton(text=BACK_BUTTON, callback_data=seller_callback.new(
+                    action='info', shop=str(shop.id)
+                ))
+            ]
+        ]
+    )
+    return keyboard
+
+
+def get_create_form_keyboard(shop: Shop, form: Form):
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=SAVE_FORM_BUTTON, callback_data=seller_callback.new(
+                    action=f'save_form_{form.id}', shop=str(shop.id)
+                ))
+            ],
+            [
+                InlineKeyboardButton(text=BACK_BUTTON, callback_data=seller_callback.new(
+                    action='info', shop=str(shop.id)
+                ))
+            ]
+        ]
+    )
+    return keyboard
+
+
 def get_seller_category_keyboard(shop: Shop, category: CategoryShop):
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
@@ -625,6 +680,19 @@ def get_seller_shop_info_keyboard(shop: Shop):
                 action='categories', shop=str(shop.id)
             )),
         ])
+    elif not await shop.form:
+        inline_keyboard.insert(0, [
+            InlineKeyboardButton(text=CREATE_FORM_BUTTON, callback_data=seller_callback.new(
+                action='create_form', shop=str(shop.id)
+            )),
+        ])
+    else:
+        inline_keyboard.insert(0, [
+            InlineKeyboardButton(text=DELETE_FORM_BUTTON, callback_data=seller_callback.new(
+                action='del_form', shop=str(shop.id)
+            )),
+        ])
+
     keyboard = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
     return keyboard
 
