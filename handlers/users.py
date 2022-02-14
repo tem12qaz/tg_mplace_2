@@ -37,7 +37,9 @@ async def bot_start(message: types.Message):
         await bot.send_photo(
             user.telegram_id,
             photo=open('logo.png', 'rb'),
-            caption=START_MESSAGE,
+        )
+        await message.answer(
+            START_MESSAGE,
             reply_markup=await get_start_keyboard(user)
         )
         return
