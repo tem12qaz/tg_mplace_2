@@ -728,6 +728,9 @@ async def handle_photo(message: types.Message):
         await asyncio.sleep(len(user.state.split('_')) * 0.1)
 
         photo = await Photo.create(source=photo_binary)
+        user = await TelegramUser.get_or_none(telegram_id=message.chat.id)
+        if user is None:
+            return
         user.state = user.state + '_' + str(photo.id)
         await user.save()
         return
