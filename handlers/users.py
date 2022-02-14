@@ -720,16 +720,8 @@ async def handle_photo(message: types.Message):
         if len(user.state.split('_')) > 2:
             await message.delete()
             return
-        user.state = user.state + '_' + str(photo.id)
-        await user.save()
-
-        print(user.state)
-        await asyncio.sleep(len(user.state.split('_')) * 0.1)
-
         photo = await Photo.create(source=photo_binary)
-        user = await TelegramUser.get_or_none(telegram_id=message.chat.id)
-        if user is None:
-            return
+
         user.state = user.state + '_' + str(photo.id)
         await user.save()
         return
@@ -822,13 +814,11 @@ async def handle_docs(message: types.Message):
         )
 
     elif 'mail' in user.state:
-        if len(user.state.split('_')) > 10:
+        if len(user.state.split('_')) > 2:
             await message.delete()
             return
-
-        await asyncio.sleep(len(user.state.split('_')) * 0.1)
-
         photo = await Photo.create(source=photo_binary)
+
         user.state = user.state + '_' + str(photo.id)
         await user.save()
         return
