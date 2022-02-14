@@ -373,10 +373,6 @@ async def listen_handler(message: types.Message):
                 photo = await Photo.get_or_none(id=int(i))
                 if photo:
                     media.attach_photo(InputFile(io.BytesIO(photo.source)))
-            await bot.send_media_group(
-                user.telegram_id,
-                media=media
-            )
 
         for user in users:
             if media:
