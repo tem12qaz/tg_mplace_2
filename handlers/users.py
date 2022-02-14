@@ -368,19 +368,15 @@ async def listen_handler(message: types.Message):
         users = await TelegramUser.all()
         photos = []
         if '_' in user.state:
-            for i in user.state.replace('mail_', '').split('_'):
-                photo = await Photo.get_or_none(id=int(i))
-                if photo:
-                    photos.append(photo)
+            photo = await Photo.get_or_none(id=int(user.state.replace('mail_', '').split('_')))
+            if photo is None:
+                user.state = ''
 
         for user in users:
             if '_' in user.state:
-                media = types.MediaGroup()
-                for photo in photos:
-                    media.attach_photo(InputFile((io.BytesIO(photo.source))))
-                await bot.send_media_group(
+                await bot.send_photo(
                     user.telegram_id,
-                    media=media
+                    photo=photo.source
                 )
             await bot.send_message(
                 user.telegram_id,
@@ -721,9 +717,12 @@ async def handle_photo(message: types.Message):
         )
 
     elif 'mail' in user.state:
-        if len(user.state.split('_')) > 10:
+        if len(user.state.split('_')) > 2:
             await message.delete()
             return
+        user.state = user.state + '_' + str(photo.id)
+        await user.save()
+
         print(user.state)
         await asyncio.sleep(len(user.state.split('_')) * 0.1)
 
