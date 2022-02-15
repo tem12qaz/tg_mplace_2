@@ -1,6 +1,6 @@
 
 PG_HOST = 'localhost'
-PG_PASSWORD = 'pass'
+PG_PASSWORD = '7pY1dPSiD0jfNPTOco5H'
 PG_USER = 'myuser'
 PG_DATABASE = 'db'
 
