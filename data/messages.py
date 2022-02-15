@@ -5,11 +5,9 @@ START_MESSAGE = '''▪️Marketplace Domodedovo это торговая площ
 ▪️ В Marketplace Domodedovo вы сможете построить свой бизнес на товарах и услугах. Вы торгуете или оказываете услуги – мы приводим клиентов.
 Присоединяйся.'''
 
-ABOUT_US_MESSAGE = '''Тестовый текст "О нас" 
-Пользовательское соглашение:
-https://telegra.ph/Polzovatelskoe-soglashenie-03-23'''
+ABOUT_US_MESSAGE = '''Пользовательское соглашение'''
 
-SUPPORT_MESSAGE = '''Пользовательское соглашение'''
+SUPPORT_MESSAGE = '''Поддержка'''
 
 ADMIN_MESSAGE = '''Введите сообщение администратору'''
 

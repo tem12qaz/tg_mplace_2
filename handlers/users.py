@@ -112,6 +112,10 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
             user.telegram_id,
             photo=open('logo.jpg', 'rb'),
         )
+        await bot.send_document(
+            user.telegram_id,
+            ('terms_of_use.txt', open('terms_of_use.txt', 'rb'))
+        )
         await bot.send_message(
             user.telegram_id,
             ABOUT_US_MESSAGE,
@@ -127,10 +131,6 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
             user.telegram_id,
             SUPPORT_MESSAGE,
             reply_markup=support_keyboard
-        )
-        await bot.send_document(
-            user.telegram_id,
-            ('terms_of_use.txt', open('terms_of_use.txt', 'rb'))
         )
 
     elif select == 'main':
