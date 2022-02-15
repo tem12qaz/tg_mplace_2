@@ -36,7 +36,7 @@ async def bot_start(message: types.Message):
         )
         await bot.send_photo(
             user.telegram_id,
-            photo=open('logo.png', 'rb'),
+            photo=open('logo.jpg', 'rb'),
         )
         await message.answer(
             START_MESSAGE,
@@ -110,7 +110,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
     elif select == 'about':
         await bot.send_photo(
             user.telegram_id,
-            photo=open('logo.png', 'rb'),
+            photo=open('logo.jpg', 'rb'),
         )
         await bot.send_message(
             user.telegram_id,
@@ -121,12 +121,16 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
     elif select == 'support':
         await bot.send_photo(
             user.telegram_id,
-            photo=open('logo.png', 'rb'),
+            photo=open('logo.jpg', 'rb'),
         )
         await bot.send_message(
             user.telegram_id,
             SUPPORT_MESSAGE,
             reply_markup=support_keyboard
+        )
+        await bot.send_document(
+            user.telegram_id,
+            ('terms_of_use.txt', open('terms_of_use.txt', 'rb'))
         )
 
     elif select == 'main':
