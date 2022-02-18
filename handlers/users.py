@@ -672,8 +672,6 @@ async def listen_handler(message: types.Message):
             return
 
         channel = (await shop.category).channel
-        print(channel)
-        print(type(channel))
 
         await message.answer(
             DEAL_CREATED_MESSAGE,
