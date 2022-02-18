@@ -393,6 +393,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
 @dp.throttled(rate=FLOOD_RATE)
 async def listen_handler(message: types.Message):
     message_ = message
+    #print(message_)
     user = await TelegramUser.get_or_none(telegram_id=message.from_user.id)
     if user is None:
         return
