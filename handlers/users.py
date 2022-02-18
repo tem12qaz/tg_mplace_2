@@ -558,10 +558,13 @@ async def listen_handler(message: types.Message):
 
         for user in users:
             if '_' in user.state:
-                await bot.send_photo(
-                    user.telegram_id,
-                    photo=photo.source
-                )
+                try:
+                    await bot.send_photo(
+                        user.telegram_id,
+                        photo=photo.source
+                    )
+                except:
+                    pass
             await bot.send_message(
                 user.telegram_id,
                 message.text
