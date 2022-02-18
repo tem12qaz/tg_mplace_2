@@ -334,7 +334,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
                     reply_markup=get_form_shop_keyboard(shop)
                 )
             else:
-                user.state = 'shop_deal_'
+                user.state = f'shop_deal_{shop.id}'
                 await user.save()
                 await bot.edit_message_text(
                     SERVICE_DEAL_MESSAGE,
