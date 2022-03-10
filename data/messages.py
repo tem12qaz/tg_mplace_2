@@ -179,13 +179,13 @@ INFO_PRODUCT_MESSAGE = '''
 
 STATISTICS_MESSAGE = '''
 Пользователи:
-<b>{users}</b<
+<b>{users}</b>
 
 Магазины:
-<b>{shops}</b<
+<b>{shops}</b>
 
 Товары:
-<b>{prods}</b<
+<b>{prods}</b>
 
 '''
 
