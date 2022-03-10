@@ -92,7 +92,7 @@ class Service(Model):
     id = fields.IntField(pk=True)
     name = fields.CharField(100)
     description = fields.TextField()
-    photo = fields.BinaryField(null=True)
+    photo = fields.TextField()
     service_category = fields.ForeignKeyField('models.ServiceCategory', related_name='services', index=True)
     field1 = fields.CharField(1024, null=True)
     field2 = fields.CharField(1024, null=True)
