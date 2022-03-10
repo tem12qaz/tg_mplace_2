@@ -47,24 +47,16 @@ class ServiceView(AdminMixin, ModelView):
             filename = field.data.filename
             if filename[-4:] != '.jpg' and filename[-4:] != '.png':
                 raise ValidationError('file must be .jpg or .png')
-        field.data = field.data.stream.read()
+        data = field.data.stream.read()
+        print(data)
+        field.data = data
+        print(field.data)
         return True
-
-    def picture_format(view, value):
-        print(value)
-        print(bytes(value))
-        return bytes(value)
 
     # @staticmethod
     def picture_formatter(view, context, model, name):
         return '' if not getattr(model, name) else 'a picture'
 
-    FORMATTERS = dict(typefmt.BASE_FORMATTERS)
-    FORMATTERS.update({
-        bytes: picture_format
-    })
-
-    column_type_formatters = FORMATTERS
     column_formatters = dict(photo=picture_formatter)
     form_overrides = dict(photo=FileUploadField)
     form_args = dict(photo=dict(validators=[picture_validation]))
