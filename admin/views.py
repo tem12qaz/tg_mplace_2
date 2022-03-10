@@ -62,7 +62,7 @@ class ServiceView(AdminMixin, ModelView):
 
     # column_formatters = dict(photo=picture_formatter)
     # form_overrides = dict(photo=FileUploadField)
-    form_args = dict(photo=dict(validators=[picture_validation]))
+    # form_args = dict(photo=dict(validators=[picture_validation]))
 
     def _list_thumbnail(view, context, model, name):
         if not model.path:
@@ -79,8 +79,8 @@ class ServiceView(AdminMixin, ModelView):
     }
 
     form_extra_fields = {
-        'path': form.ImageUploadField(
-            'Image', base_path=file_path, thumbnail_size=(100, 100, True))
+        'photo': form.ImageUploadField(
+            'photo', base_path=file_path, thumbnail_size=(100, 100, True))
     }
 
 
