@@ -469,6 +469,34 @@ async def listen_handler(message: types.Message):
         await message.delete()
 
     elif 'service_bid' in user.state:
+        async def send_deal(bid_):
+            user.state = ''
+            await user.save()
+            channel_ = (await service.category).channel
+            text_ = ''
+            fields = service.fields()
+            for field_ in fields:
+                if field_:
+                    text_ += BID_ROW.format(
+                        field=field_,
+                        value=bid_.fields()[fields.index(field_)]
+                    )
+
+            await message.answer(
+                DEAL_CREATED_MESSAGE,
+                reply_markup=get_back_service_keyboard(service)
+            )
+            await bot.send_message(
+                channel_,
+                ADMIN_SERVICE_MESSAGE.format(
+                    name=service.name,
+                    category=category.name,
+                    username=user.username,
+                    text=text_
+                )
+            )
+            await bid_.delete()
+
         if 'service_bid_' in user.state:
             bid = await Bid.get_or_none(id=int(user.state.split('_')[-1]))
             if bid is None:
@@ -478,34 +506,6 @@ async def listen_handler(message: types.Message):
                 return
 
             category = await service.category
-
-            async def send_deal(bid_):
-                user.state = ''
-                await user.save()
-                channel_ = (await service.category).channel
-                text_ = ''
-                fields = service.fields()
-                for field_ in fields:
-                    if field_:
-                        text_ += BID_ROW.format(
-                            field=field_,
-                            value=bid_.fields()[fields.index(field_)]
-                        )
-
-                await message.answer(
-                    DEAL_CREATED_MESSAGE,
-                    reply_markup=get_back_service_keyboard(service)
-                )
-                await bot.send_message(
-                    channel_,
-                    ADMIN_SERVICE_MESSAGE.format(
-                        name=service.name,
-                        category=category.name,
-                        username=user.username,
-                        text=text_
-                    )
-                )
-                await bid_.delete()
 
             keyboard = get_back_service_keyboard(service)
 
@@ -552,12 +552,52 @@ async def listen_handler(message: types.Message):
             bid = await Bid.create(field1=message.text[:1024])
             user.state = f'{service_id}_service_bid_{bid.id}'
             await user.save()
+            if not service.field2:
+                await send_deal(bid)
+                return
+
             await message.answer(
                 SEND_MESSAGE + service.field2,
                 reply_markup=get_back_service_keyboard(service)
             )
 
     elif 'create_bid' in user.state:
+        async def send_deal(bid_):
+            user.state = ''
+            await user.save()
+            channel_ = (await shop.category).channel
+            text_ = ''
+            fields = form.fields()
+            for field_ in fields:
+                if field_:
+                    text_ += BID_ROW.format(
+                        field=field_,
+                        value=bid_.fields()[fields.index(field_)]
+                    )
+
+            await message.answer(
+                DEAL_CREATED_MESSAGE,
+                reply_markup=get_back_shop_keyboard(shop)
+            )
+            await bot.send_message(
+                channel_,
+                SHOP_DEAL_MESSAGE.format(
+                    shop=shop.name,
+                    username=user.username,
+                    text=text_
+                )
+            )
+
+            await bot.send_message(
+                (await shop.owner).telegram_id,
+                SHOP_DEAL_MESSAGE.format(
+                    shop=shop.name,
+                    username=user.username,
+                    text=text_
+                )
+            )
+            await bid_.delete()
+
         if 'create_bid_' in user.state:
             bid = await Bid.get_or_none(id=int(user.state.split('_')[-1]))
             if bid is None:
@@ -568,42 +608,6 @@ async def listen_handler(message: types.Message):
             shop = await form.shop
             if shop is None:
                 return
-
-            async def send_deal(bid_):
-                user.state = ''
-                await user.save()
-                channel_ = (await shop.category).channel
-                text_ = ''
-                fields = form.fields()
-                for field_ in fields:
-                    if field_:
-                        text_ += BID_ROW.format(
-                            field=field_,
-                            value=bid_.fields()[fields.index(field_)]
-                        )
-
-                await message.answer(
-                    DEAL_CREATED_MESSAGE,
-                    reply_markup=get_back_shop_keyboard(shop)
-                )
-                await bot.send_message(
-                    channel_,
-                    SHOP_DEAL_MESSAGE.format(
-                        shop=shop.name,
-                        username=user.username,
-                        text=text_
-                    )
-                )
-
-                await bot.send_message(
-                    (await shop.owner).telegram_id,
-                    SHOP_DEAL_MESSAGE.format(
-                        shop=shop.name,
-                        username=user.username,
-                        text=text_
-                    )
-                )
-                await bid_.delete()
 
             keyboard = get_back_shop_keyboard(shop)
 
@@ -650,6 +654,10 @@ async def listen_handler(message: types.Message):
             bid = await Bid.create(form=form, field1=message.text[:1024])
             user.state = f'create_bid_{bid.id}'
             await user.save()
+            if not form.field2:
+                await send_deal(bid)
+                return
+
             await message.answer(
                 SEND_MESSAGE + form.field2,
                 reply_markup=get_back_shop_keyboard(await form.shop)
