@@ -46,7 +46,7 @@ class ServiceView(AdminMixin, ModelView):
 
     form_columns = ('name', 'description', 'photo', 'service_category', 'field1', 'field2', 'field3', 'field4', 'field5')
 
-    # @staticmethod
+    # d
     def picture_validation(form, field):
         if field.data:
             filename = field.data.filename
