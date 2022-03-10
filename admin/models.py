@@ -39,6 +39,9 @@ class ServiceCategory(db.Model):
     channel = db.Column(db.String(32), nullable=True)
     services = db.relationship('Service', backref='service_category', lazy=True)
 
+    def __repr__(self):
+        return 'id' + str(self.id) + ' ' + self.name
+
 
 class Service(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
