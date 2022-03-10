@@ -49,7 +49,7 @@ class ServiceView(AdminMixin, ModelView):
                 raise ValidationError('file must be .jpg or .png')
         data = field.data.stream.read()
         field.data = data
-        return True
+        return data
 
     # @staticmethod
     def picture_formatter(view, context, model, name):
