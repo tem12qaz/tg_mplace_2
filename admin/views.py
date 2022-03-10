@@ -1,13 +1,18 @@
+import os
+
 from flask import redirect, url_for, request
 from flask_admin.form import FileUploadField
 from flask_admin.model import typefmt
 from flask_security import current_user
 
-from flask_admin import BaseView, AdminIndexView, expose
+from flask_admin import BaseView, AdminIndexView, expose, form
 
 from flask_admin.contrib.sqla import ModelView
+from jinja2 import Markup
 from wtforms import ValidationError
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+file_path = os.path.join(basedir, 'files')
 
 class AdminMixin:
     def is_accessible(self):
@@ -49,17 +54,34 @@ class ServiceView(AdminMixin, ModelView):
                 raise ValidationError('file must be .jpg or .png')
         data = field.data.stream.read()
         field.data = data
-        print(form)
-        print(form.photo)
-        return data
+        return True
 
     # @staticmethod
     def picture_formatter(view, context, model, name):
         return '' if not getattr(model, name) else 'a picture'
 
-    column_formatters = dict(photo=picture_formatter)
-    form_overrides = dict(photo=FileUploadField)
+    # column_formatters = dict(photo=picture_formatter)
+    # form_overrides = dict(photo=FileUploadField)
     form_args = dict(photo=dict(validators=[picture_validation]))
+
+    def _list_thumbnail(view, context, model, name):
+        if not model.path:
+            return ''
+
+        return Markup(
+            '<img src="%s">' %
+            url_for('static',
+                    filename=form.thumbgen_filename(model.path))
+        )
+
+    column_formatters = {
+        'photo': _list_thumbnail
+    }
+
+    form_extra_fields = {
+        'path': form.ImageUploadField(
+            'Image', base_path=file_path, thumbnail_size=(100, 100, True))
+    }
 
 
 class LogoutView(AdminMixin, BaseView):
