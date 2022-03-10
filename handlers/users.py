@@ -472,7 +472,7 @@ async def listen_handler(message: types.Message):
         async def send_deal(bid_):
             user.state = ''
             await user.save()
-            channel_ = (await service.category).channel
+            channel_ = (await service.service_category).channel
             text_ = ''
             fields = service.fields()
             for field_ in fields:
@@ -505,7 +505,7 @@ async def listen_handler(message: types.Message):
             if service is None:
                 return
 
-            category = await service.category
+            category = await service.service_category
 
             keyboard = get_back_service_keyboard(service)
 
