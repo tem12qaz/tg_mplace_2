@@ -39,7 +39,7 @@ class ServiceView(AdminMixin, ModelView):
 
     form_columns = ('name', 'description', 'photo', 'service_category', 'field1', 'field2', 'field3', 'field4', 'field5')
 
-    @staticmethod
+    # @staticmethod
     def picture_validation(form, field):
         if field.data:
             filename = field.data.filename
@@ -48,7 +48,7 @@ class ServiceView(AdminMixin, ModelView):
         field.data = field.data.stream.read()
         return True
 
-    @staticmethod
+    # @staticmethod
     def picture_formatter(view, context, model, name):
         return 'NULL' if len(getattr(model, name)) == 0 else 'a picture'
 
