@@ -469,7 +469,7 @@ async def listen_handler(message: types.Message):
         await message.delete()
 
     elif 'service_bid' in user.state:
-        async def send_deal(bid_):
+        async def send_deal(bid_, category):
             user.state = ''
             await user.save()
             channel_ = (await service.service_category).channel
@@ -509,57 +509,29 @@ async def listen_handler(message: types.Message):
 
             keyboard = get_back_service_keyboard(service)
 
-            async def send_deal(bid_):
-                user.state = ''
-                await user.save()
-                channel_ = (await service.service_category).channel
-                text_ = ''
-                fields = service.fields()
-                for field_ in fields:
-                    if field_:
-                        text_ += BID_ROW.format(
-                            field=field_,
-                            value=bid_.fields()[fields.index(field_)]
-                        )
-
-                await message.answer(
-                    DEAL_CREATED_MESSAGE,
-                    reply_markup=get_back_service_keyboard(service)
-                )
-                await bot.send_message(
-                    channel_,
-                    ADMIN_SERVICE_MESSAGE.format(
-                        name=service.name,
-                        category=category.name,
-                        username=user.username,
-                        text=text_
-                    )
-                )
-                await bid_.delete()
-
             if bid.field4:
                 bid.field5 = message.text[:1024]
-                await send_deal(bid)
+                await send_deal(bid, category)
                 return
 
             elif bid.field3:
                 bid.field4 = message.text[:1024]
                 if not service.field5:
-                    await send_deal(bid)
+                    await send_deal(bid, category)
                     return
                 text = SEND_MESSAGE + service.field5
 
             elif bid.field2:
                 bid.field3 = message.text[:1024]
                 if not service.field4:
-                    await send_deal(bid)
+                    await send_deal(bid, category)
                     return
                 text = SEND_MESSAGE + service.field4
 
             elif bid.field1:
                 bid.field2 = message.text[:1024]
                 if not service.field3:
-                    await send_deal(bid)
+                    await send_deal(bid, category)
                     return
                 text = SEND_MESSAGE + service.field3
 
@@ -577,11 +549,15 @@ async def listen_handler(message: types.Message):
             service = await Service.get_or_none(id=int(service_id))
             if service is None:
                 return
+            category = await service.service_category
+            if category is None:
+                return
+
             bid = await Bid.create(field1=message.text[:1024])
             user.state = f'{service_id}_service_bid_{bid.id}'
             await user.save()
             if not service.field2:
-                await send_deal(bid)
+                await send_deal(bid, category)
                 return
 
             await message.answer(
