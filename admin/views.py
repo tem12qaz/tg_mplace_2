@@ -49,9 +49,9 @@ class ServiceView(AdminMixin, ModelView):
         return True
 
     # @staticmethod
-    def picture_formatter(view, context, model, name, photo):
+    def picture_formatter(view, context, model, name):
         # print(context)
-        return bytes(photo)
+        return bytes(model.photo)
 
     column_formatters = dict(photo=picture_formatter)
     form_overrides = dict(photo=FileUploadField)
