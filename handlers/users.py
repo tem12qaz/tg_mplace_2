@@ -509,6 +509,34 @@ async def listen_handler(message: types.Message):
 
             keyboard = get_back_service_keyboard(service)
 
+            async def send_deal(bid_):
+                user.state = ''
+                await user.save()
+                channel_ = (await service.service_category).channel
+                text_ = ''
+                fields = service.fields()
+                for field_ in fields:
+                    if field_:
+                        text_ += BID_ROW.format(
+                            field=field_,
+                            value=bid_.fields()[fields.index(field_)]
+                        )
+
+                await message.answer(
+                    DEAL_CREATED_MESSAGE,
+                    reply_markup=get_back_service_keyboard(service)
+                )
+                await bot.send_message(
+                    channel_,
+                    ADMIN_SERVICE_MESSAGE.format(
+                        name=service.name,
+                        category=category.name,
+                        username=user.username,
+                        text=text_
+                    )
+                )
+                await bid_.delete()
+
             if bid.field4:
                 bid.field5 = message.text[:1024]
                 await send_deal(bid)
