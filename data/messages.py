@@ -138,7 +138,7 @@ ADMIN_SERVICE_MESSAGE = '''<b>Заявка на получение услуги<
 {category}
 
 <b>Имя пользователя:</b>
-{username}
+@{username}
 
 <b>Текст заяки:</b>
 {text}'''
@@ -157,7 +157,7 @@ SHOP_DEAL_MESSAGE = '''<b>Заявка</b>
 {shop}
 
 <b>Имя пользователя:</b>
-{username}
+@{username}
 
 <b>Текст заяки:</b>
 {text}'''
@@ -177,6 +177,19 @@ INFO_PRODUCT_MESSAGE = '''
 '''
 
 
+STATISTICS_MESSAGE = '''
+Пользователи:
+<b>{users}</b<
+
+Магазины:
+<b>{shops}</b<
+
+Товары:
+<b>{prods}</b<
+
+'''
+
+
 PRODUCT_DEAL_MESSAGE = '''<b>Заявка</b>
 
 <b>Магазин:</b>
@@ -189,7 +202,7 @@ PRODUCT_DEAL_MESSAGE = '''<b>Заявка</b>
 {price}
 
 <b>Имя пользователя:</b>
-{username}
+@{username}
 
 <b>Контакты</b>
 {contacts}'''

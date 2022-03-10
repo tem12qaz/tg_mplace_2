@@ -26,6 +26,10 @@ class Category(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(100))
     channel = db.Column(db.String(32), nullable=True)
+    category = db.relationship('Category', backref='shops', lazy=True)
+
+    def __repr__(self):
+        return 'id' + self.id + ' ' + self.name
 
 
 class ServiceCategory(db.Model):
@@ -33,5 +37,12 @@ class ServiceCategory(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(100))
     channel = db.Column(db.String(32), nullable=True)
+
+
+class Shop(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(100))
+    description = db.Column(db.TextField())
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
 
 

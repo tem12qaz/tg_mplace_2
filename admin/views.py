@@ -26,6 +26,12 @@ class CategoryView(AdminMixin, ModelView):
     form_columns = ('name', 'channel')
 
 
+class ShopView(AdminMixin, ModelView):
+    column_list = ('id', 'name', 'description', 'category')
+
+    form_columns = ('id', 'name', 'description', 'category')
+
+
 class LogoutView(AdminMixin, BaseView):
     @expose('/')
     def logout_button(self):

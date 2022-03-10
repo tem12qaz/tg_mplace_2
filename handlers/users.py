@@ -52,6 +52,26 @@ async def bot_start(message: types.Message):
     )
 
 
+@dp.message_handler(commands=['stat'])
+@dp.throttled(rate=FLOOD_RATE)
+async def mail_handler(message: types.Message):
+    if int(message.from_user.id) not in ADMINS:
+        await message.delete()
+        return
+
+    users = len(await TelegramUser.all())
+    prods = len(await Product.all())
+    shops = len(await Shop.all())
+
+    await message.answer(
+        STATISTICS_MESSAGE.format(
+            users=users,
+            prods=prods,
+            shops=shops
+        )
+    )
+
+
 @dp.message_handler(commands=['mail'])
 @dp.throttled(rate=FLOOD_RATE)
 async def mail_handler(message: types.Message):
