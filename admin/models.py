@@ -29,7 +29,7 @@ class Category(db.Model):
     shops = db.relationship('Shop', backref='category', lazy=True)
 
     def __repr__(self):
-        return 'id' + self.id + ' ' + self.name
+        return 'id' + str(self.id) + ' ' + self.name
 
 
 class ServiceCategory(db.Model):
