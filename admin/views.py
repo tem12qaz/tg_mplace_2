@@ -50,6 +50,7 @@ class ServiceView(AdminMixin, ModelView):
 
     # @staticmethod
     def picture_formatter(view, context, model, name):
+        print(context)
         return 'NULL' if len(getattr(model, name)) == 0 else 'a picture'
 
     column_formatters = dict(photo=picture_formatter)
