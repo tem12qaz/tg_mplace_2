@@ -42,7 +42,7 @@ class ServiceCategory(db.Model):
 class Shop(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(100))
-    description = db.Column(db.TextField())
+    description = db.Column(db.Text())
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
 
 
