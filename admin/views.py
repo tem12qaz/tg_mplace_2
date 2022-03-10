@@ -45,7 +45,7 @@ class ShopView(AdminMixin, ModelView):
 class ImageUpload(form.ImageUploadField):
     def _save_file(self, data, filename):
         path = self._get_path(filename)
-
+        print(path)
         if op.exists(path):
             filename1, filename2 = filename.split('.')
             filename = filename1 + str(time.time()) + filename2
