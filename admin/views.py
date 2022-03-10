@@ -65,13 +65,13 @@ class ServiceView(AdminMixin, ModelView):
     # form_args = dict(photo=dict(validators=[picture_validation]))
 
     def _list_thumbnail(view, context, model, name):
-        if not model.path:
+        if not model.photo:
             return ''
 
         return Markup(
             '<img src="%s">' %
             url_for('static',
-                    filename=form.thumbgen_filename(model.path))
+                    filename=form.thumbgen_filename(model.photo))
         )
 
     column_formatters = {
