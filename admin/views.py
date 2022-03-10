@@ -1,4 +1,6 @@
 import os
+import os.path as op
+import time
 
 from flask import redirect, url_for, request
 from flask_admin.form import FileUploadField
@@ -38,6 +40,36 @@ class ShopView(AdminMixin, ModelView):
     column_list = ('id', 'name', 'description', 'category')
 
     form_columns = ('id', 'name', 'description', 'category')
+
+
+class ImageUpload(form.ImageUploadField):
+    def _save_file(self, data, filename):
+        path = self._get_path(filename)
+
+        if op.exists(path):
+            filename1, filename2 = filename.split('.')
+            filename = filename1 + str(time.time()) + filename2
+
+        if not op.exists(op.dirname(path)):
+            os.makedirs(os.path.dirname(path), self.permission | 0o111)
+
+        # Figure out format
+        filename, format = self._get_save_format(filename, self.image)
+
+        if self.image and (self.image.format != format or self.max_size):
+            if self.max_size:
+                image = self._resize(self.image, self.max_size)
+            else:
+                image = self.image
+
+            self._save_image(image, self._get_path(filename), format)
+        else:
+            data.seek(0)
+            data.save(self._get_path(filename))
+
+        self._save_thumbnail(data, filename, format)
+
+        return filename
 
 
 class ServiceView(AdminMixin, ModelView):
@@ -80,7 +112,7 @@ class ServiceView(AdminMixin, ModelView):
     }
 
     form_extra_fields = {
-        'photo': form.ImageUploadField(
+        'photo': ImageUpload(
             'photo', base_path=file_path, thumbnail_size=(100, 100, True))
     }
 
