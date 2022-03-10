@@ -1,5 +1,6 @@
 from flask import redirect, url_for, request
 from flask_admin.form import FileUploadField
+from flask_admin.model import typefmt
 from flask_security import current_user
 
 from flask_admin import BaseView, AdminIndexView, expose
@@ -35,6 +36,7 @@ class ShopView(AdminMixin, ModelView):
 
 
 class ServiceView(AdminMixin, ModelView):
+
     column_list = ('id', 'name', 'description', 'photo', 'service_category', 'field1', 'field2', 'field3', 'field4', 'field5')
 
     form_columns = ('name', 'description', 'photo', 'service_category', 'field1', 'field2', 'field3', 'field4', 'field5')
@@ -48,10 +50,19 @@ class ServiceView(AdminMixin, ModelView):
         field.data = field.data.stream.read()
         return True
 
+    def picture_format(view, value):
+        return bytes(value)
+
     # @staticmethod
     def picture_formatter(view, context, model, name):
         return '' if not getattr(model, name) else 'a picture'
 
+    FORMATTERS = dict(typefmt.BASE_FORMATTERS)
+    FORMATTERS.update({
+        bytes: picture_format
+    })
+
+    column_type_formatters = FORMATTERS
     column_formatters = dict(photo=picture_formatter)
     form_overrides = dict(photo=FileUploadField)
     form_args = dict(photo=dict(validators=[picture_validation]))
