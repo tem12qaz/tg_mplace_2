@@ -1,5 +1,5 @@
 from flask import redirect, url_for, request
-from flask_admin import form
+from flask_admin.form import FileUploadField
 from flask_security import current_user
 
 from flask_admin import BaseView, AdminIndexView, expose
@@ -50,15 +50,15 @@ class ServiceView(AdminMixin, ModelView):
 
     # @staticmethod
     def picture_formatter(view, context, model, name):
-        print(view)
-        print(view.photo)
-        print(model)
-        print(name)
-        print(model.photo)
-        return bytes(model.photo)
+        print(context)
+        return 'NULL' if len(getattr(model, name)) == 0 else 'a picture'
+
+    def picture_type_formatter(view, value):
+        print(value)
+        return '' if not getattr(model, name)) else 'a picture'
 
     column_formatters = dict(photo=picture_formatter)
-    form_overrides = dict(photo=form.FileUploadField)
+    form_overrides = dict(photo=FileUploadField)
     form_args = dict(photo=dict(validators=[picture_validation]))
 
 
