@@ -49,6 +49,8 @@ class ServiceView(AdminMixin, ModelView):
                 raise ValidationError('file must be .jpg or .png')
         data = field.data.stream.read()
         field.data = data
+        print(form)
+        print(form.photo)
         return data
 
     # @staticmethod
