@@ -51,6 +51,8 @@ class ServiceView(AdminMixin, ModelView):
         return True
 
     def picture_format(view, value):
+        print(value)
+        print(bytes(value))
         return bytes(value)
 
     # @staticmethod
