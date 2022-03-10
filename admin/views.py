@@ -50,12 +50,7 @@ class ServiceView(AdminMixin, ModelView):
 
     # @staticmethod
     def picture_formatter(view, context, model, name):
-        print(context)
-        return 'NULL' if len(getattr(model, name)) == 0 else 'a picture'
-
-    def picture_type_formatter(view, value):
-        print(value)
-        return '' if not getattr(model, name)) else 'a picture'
+        return '' if not getattr(model, name) else 'a picture'
 
     column_formatters = dict(photo=picture_formatter)
     form_overrides = dict(photo=FileUploadField)
