@@ -50,7 +50,9 @@ class ServiceView(AdminMixin, ModelView):
 
     # @staticmethod
     def picture_formatter(view, context, model, name):
-        # print(context)
+        print(model)
+        print(name)
+        print(model.photo)
         return bytes(model.photo)
 
     column_formatters = dict(photo=picture_formatter)
