@@ -2,7 +2,6 @@ import os
 
 from flask import redirect, url_for, request
 from flask_admin.form import FileUploadField
-from flask_admin.model import typefmt
 from flask_security import current_user
 
 from flask_admin import BaseView, AdminIndexView, expose, form
@@ -13,6 +12,7 @@ from wtforms import ValidationError
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 file_path = os.path.join(basedir, 'files')
+
 
 class AdminMixin:
     def is_accessible(self):
@@ -41,10 +41,11 @@ class ShopView(AdminMixin, ModelView):
 
 
 class ServiceView(AdminMixin, ModelView):
+    column_list = (
+    'id', 'name', 'description', 'photo', 'service_category', 'field1', 'field2', 'field3', 'field4', 'field5')
 
-    column_list = ('id', 'name', 'description', 'photo', 'service_category', 'field1', 'field2', 'field3', 'field4', 'field5')
-
-    form_columns = ('name', 'description', 'photo', 'service_category', 'field1', 'field2', 'field3', 'field4', 'field5')
+    form_columns = (
+    'name', 'description', 'photo', 'service_category', 'field1', 'field2', 'field3', 'field4', 'field5')
 
     # d
     def picture_validation(form, field):

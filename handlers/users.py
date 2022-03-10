@@ -201,9 +201,12 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
         if service is None:
             return
 
+        with open(service.photo, 'rb') as f:
+            photo = f.read()
+
         await bot.send_photo(
             user.telegram_id,
-            photo=service.photo
+            photo=photo
         )
         message = SERVICE_INFO_MESSAGE.format(
             name=service.name,
