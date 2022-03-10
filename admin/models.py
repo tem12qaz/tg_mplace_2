@@ -44,7 +44,7 @@ class Service(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(100))
     description = db.Column(db.Text())
-    photo = db.Column(db.Binary())
+    photo = db.Column(db.LargeBinary())
     servicecategory_id = db.Column(db.Integer, db.ForeignKey('servicecategory.id'), nullable=False)
     field1 = db.Column(db.String(1024), nullable=True)
     field2 = db.Column(db.String(1024), nullable=True)
