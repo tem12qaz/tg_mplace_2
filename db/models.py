@@ -48,7 +48,7 @@ class Form(Model):
 
 class Bid(Model):
     id = fields.IntField(pk=True)
-    form = fields.ForeignKeyField('models.Form', related_name='bids')
+    form = fields.ForeignKeyField('models.Form', related_name='bids', null=True)
     field1 = fields.CharField(1024)
     field2 = fields.CharField(1024, null=True)
     field3 = fields.CharField(1024, null=True)
@@ -86,6 +86,22 @@ class Category(Model):
     id = fields.IntField(pk=True)
     name = fields.CharField(100)
     channel = fields.CharField(32, null=True)
+
+
+class Service(Model):
+    id = fields.IntField(pk=True)
+    name = fields.CharField(100)
+    description = fields.TextField()
+    photo = fields.BinaryField(null=True)
+    service_category = fields.ForeignKeyField('models.ServiceCategory', related_name='services', index=True)
+    field1 = fields.CharField(1024, null=True)
+    field2 = fields.CharField(1024, null=True)
+    field3 = fields.CharField(1024, null=True)
+    field4 = fields.CharField(1024, null=True)
+    field5 = fields.CharField(1024, null=True)
+
+    def fields(self):
+        return self.field1, self.field2, self.field3, self.field4, self.field5
 
 
 class ServiceCategory(Model):

@@ -30,6 +30,8 @@ CREATE_SHOP_TYPE_MESSAGE = '''Выберите тип магазина.
 
 CREATE_SHOP_CATEGORY_MESSAGE = '''Выберите категорию'''
 
+SELECT_SERVICE_MESSAGE = '''Выберите услугу'''
+
 INPUT_SHOP_NAME_MESSAGE = '''Введите название магазина'''
 
 INPUT_SHOP_DESCRIPTION_MESSAGE = '''Введите описание магазина'''
@@ -133,6 +135,9 @@ SERVICE_DEAL_MESSAGE = '''Введите текст заяки.
 Укажите свои контакты для связи.'''
 
 ADMIN_SERVICE_MESSAGE = '''<b>Заявка на получение услуги</b>
+
+<b>Услуга</b>
+{name}
 
 <b>Категория:</b>
 {category}
@@ -246,6 +251,14 @@ BID_ROW = '''<b>{field}:</b> {value}
 
 '''
 
+SERVICE_INFO_MESSAGE = '''
+Услуга
+
+<b>{name}</b>
+
+Описание:
+{description}
+'''
 
 
 

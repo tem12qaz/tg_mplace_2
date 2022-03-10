@@ -37,6 +37,21 @@ class ServiceCategory(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(100))
     channel = db.Column(db.String(32), nullable=True)
+    services = db.relationship('Service', backref='service_category', lazy=True)
+
+
+class Service(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(100))
+    description = db.Column(db.Text())
+    photo = db.Column(db.Binary())
+    servicecategory_id = db.Column(db.Integer, db.ForeignKey('servicecategory.id'), nullable=False)
+    field1 = db.Column(db.String(1024), nullable=True)
+    field2 = db.Column(db.String(1024), nullable=True)
+    field3 = db.Column(db.String(1024), nullable=True)
+    field4 = db.Column(db.String(1024), nullable=True)
+    field5 = db.Column(db.String(1024), nullable=True)
+
 
 
 class Shop(db.Model):

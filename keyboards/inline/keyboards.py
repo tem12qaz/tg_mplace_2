@@ -4,7 +4,7 @@ from aiogram.utils.callback_data import CallbackData
 
 from data.buttons import *
 from data.messages import CREATE_REVIEW_MESSAGE, REVIEW_MESSAGE
-from db.models import TelegramUser, Category, Shop, CategoryShop, Product, ServiceCategory, Review, Form
+from db.models import TelegramUser, Category, Shop, CategoryShop, Product, ServiceCategory, Review, Form, Service
 
 start_callback = CallbackData("main_menu", 'select')
 admin_callback = CallbackData("admin", 'action', 'param')
@@ -141,6 +141,17 @@ def get_form_shop_keyboard(shop: Shop):
     return keyboard
 
 
+def get_back_service_keyboard(service: Service):
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(select=f'subservice_{service.id}'))
+            ]
+        ]
+    )
+    return keyboard
+
+
 def get_back_shop_keyboard(shop: Shop):
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
@@ -229,6 +240,59 @@ async def get_shops_cats_keyboard(shop: Shop):
         [
             InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(
                 select=f'shop_{shop.id}'
+            ))
+        ]
+    )
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+    return keyboard
+
+
+async def get_service_keyboard(service: Service):
+    category = await service.service_category
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=DEAL_BUTTON, callback_data=start_callback.new(
+                    select=f'deal_service_{service.id}'
+                )),
+            ],
+            [
+                InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(select=f'service_{category.id}'))
+            ]
+        ]
+    )
+    return keyboard
+
+
+async def get_services_keyboard(category: ServiceCategory):
+    services = await category.services.all()
+    inline_keyboard = []
+    for i in range(0, len(services), 2):
+        if i != len(services) - 1:
+            inline_keyboard.append(
+                [
+                    InlineKeyboardButton(text=services[i].name, callback_data=start_callback.new(
+                        select=f'subservice_{services[i].id}'
+                    )),
+                    InlineKeyboardButton(text=services[i + 1].name, callback_data=start_callback.new(
+                        select=f'subservice_{services[i + 1].id}'
+                    )),
+                ]
+            )
+        else:
+            inline_keyboard.append(
+                [
+                    InlineKeyboardButton(text=services[i].name, callback_data=start_callback.new(
+                        select=f'subservice_{services[i].id}'
+                    ))
+                ]
+            )
+
+    inline_keyboard.append(
+        [
+            InlineKeyboardButton(text=BACK_BUTTON, callback_data=start_callback.new(
+                select=f'services'
             ))
         ]
     )
