@@ -201,7 +201,7 @@ async def main_menu(callback: types.CallbackQuery, callback_data):
         if service is None:
             return
 
-        with open(service.photo, 'rb') as f:
+        with open(f'admin/files/{service.photo}', 'rb') as f:
             photo = f.read()
 
         await bot.send_photo(
