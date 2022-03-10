@@ -43,8 +43,8 @@ class ServiceView(AdminMixin, ModelView):
     def picture_validation(form, field):
         if field.data:
             filename = field.data.filename
-            if filename[-4:] != '.jpg' or filename[-4:] != '.png':
-                raise ValidationError('file must be .jpg')
+            if filename[-4:] != '.jpg' and filename[-4:] != '.png':
+                raise ValidationError('file must be .jpg or .png')
         field.data = field.data.stream.read()
         return True
 
