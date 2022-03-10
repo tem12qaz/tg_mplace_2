@@ -1,5 +1,5 @@
 from flask import redirect, url_for, request
-from flask_admin.form import FileUploadField
+from flask_admin.form import ImageUploadInput
 from flask_admin.model import typefmt
 from flask_security import current_user
 
@@ -48,9 +48,7 @@ class ServiceView(AdminMixin, ModelView):
             if filename[-4:] != '.jpg' and filename[-4:] != '.png':
                 raise ValidationError('file must be .jpg or .png')
         data = field.data.stream.read()
-        print(data)
         field.data = data
-        print(field.data)
         return True
 
     # @staticmethod
@@ -58,7 +56,7 @@ class ServiceView(AdminMixin, ModelView):
         return '' if not getattr(model, name) else 'a picture'
 
     column_formatters = dict(photo=picture_formatter)
-    form_overrides = dict(photo=FileUploadField)
+    form_overrides = dict(photo=ImageUploadInput)
     form_args = dict(photo=dict(validators=[picture_validation]))
 
 
