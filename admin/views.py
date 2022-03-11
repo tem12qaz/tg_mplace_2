@@ -57,7 +57,8 @@ class ImageUpload(form.ImageUploadField):
             filename1, filename2 = filename.split('.')
             path = filename1 + str(time.time()) + filename2
             # path = filename
-            # print(filename)
+            print(filename)
+            print(path)
 
         if not op.exists(op.dirname(path)):
             os.makedirs(os.path.dirname(path), self.permission | 0o111)
