@@ -3,13 +3,14 @@ import os.path as op
 import time
 
 from flask import redirect, url_for, request
-from flask_admin.form import FileUploadField
+from flask_admin.form import FileUploadField, ImageUploadField
 from flask_security import current_user
 
 from flask_admin import BaseView, AdminIndexView, expose, form
 
 from flask_admin.contrib.sqla import ModelView
 from jinja2 import Markup
+from werkzeug.utils import secure_filename
 from wtforms import ValidationError
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -42,47 +43,9 @@ class ShopView(AdminMixin, ModelView):
     form_columns = ('id', 'name', 'description', 'category')
 
 
-class ImageUpload(form.ImageUploadField):
-    def _save_file(self, data, filename):
-        print(filename)
-        path = self._get_path(filename)
-        print(path)
-        try:
-            with open(path, 'rb') as f:
-                print(f)
-                pass
-        except Exception as e:
-            print(e)
-            pass
-        else:
-        # if op.exists(path):
-        #     print('-------')
-            filename1, filename2 = filename.split('.')
-            path = filename1 + str(time.time()) + filename2
-            # path = filename
-            print(filename)
-            print(path)
-
-        if not op.exists(op.dirname(path)):
-            os.makedirs(os.path.dirname(path), self.permission | 0o111)
-
-        # Figure out format
-        filename, format = self._get_save_format(filename, self.image)
-
-        if self.image and (self.image.format != format or self.max_size):
-            if self.max_size:
-                image = self._resize(self.image, self.max_size)
-            else:
-                image = self.image
-
-            self._save_image(image, self._get_path(filename), format)
-        else:
-            data.seek(0)
-            data.save(self._get_path(filename))
-
-        self._save_thumbnail(data, filename, format)
-
-        return filename
+def name_gen(obj, file_data):
+    parts = op.splitext(file_data.filename)
+    return secure_filename(f'file-{time.time()}%s%s' % parts)
 
 
 class ServiceView(AdminMixin, ModelView):
@@ -125,7 +88,7 @@ class ServiceView(AdminMixin, ModelView):
     }
 
     form_extra_fields = {
-        'photo': ImageUpload(
+        'photo': ImageUploadField(
             'photo', base_path=file_path, thumbnail_size=(100, 100, True))
     }
 
