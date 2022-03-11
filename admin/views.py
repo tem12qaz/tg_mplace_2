@@ -46,12 +46,18 @@ class ImageUpload(form.ImageUploadField):
     def _save_file(self, data, filename):
         path = self._get_path(filename)
         print(path)
-        if op.exists(path):
-            print('-------')
+        try:
+            with open(path, 'rb') as f:
+                pass
+        except:
+            pass
+        else:
+        # if op.exists(path):
+        #     print('-------')
             filename1, filename2 = filename.split('.')
-            filename = filename1 + str(time.time()) + filename2
-            path = filename
-            print(filename)
+            path = filename1 + str(time.time()) + filename2
+            # path = filename
+            # print(filename)
 
         if not op.exists(op.dirname(path)):
             os.makedirs(os.path.dirname(path), self.permission | 0o111)
