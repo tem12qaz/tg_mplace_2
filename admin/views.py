@@ -89,7 +89,7 @@ class ServiceView(AdminMixin, ModelView):
 
     form_extra_fields = {
         'photo': ImageUploadField(
-            'photo', base_path=file_path, thumbnail_size=(100, 100, True))
+            'photo', base_path=file_path, thumbnail_size=(100, 100, True), namegen=name_gen)
     }
 
 
