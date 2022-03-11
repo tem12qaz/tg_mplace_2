@@ -51,7 +51,8 @@ class ImageUpload(form.ImageUploadField):
             with open(path, 'rb') as f:
                 print(f)
                 pass
-        except:
+        except Exception as e:
+            print(e)
             pass
         else:
         # if op.exists(path):
