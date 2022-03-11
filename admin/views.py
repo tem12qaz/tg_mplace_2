@@ -44,10 +44,12 @@ class ShopView(AdminMixin, ModelView):
 
 class ImageUpload(form.ImageUploadField):
     def _save_file(self, data, filename):
+        print(filename)
         path = self._get_path(filename)
         print(path)
         try:
             with open(path, 'rb') as f:
+                print(f)
                 pass
         except:
             pass
