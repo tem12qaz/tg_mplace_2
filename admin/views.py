@@ -47,6 +47,7 @@ class ImageUpload(form.ImageUploadField):
         path = self._get_path(filename)
         print(path)
         if op.exists(path):
+            print('-------')
             filename1, filename2 = filename.split('.')
             filename = filename1 + str(time.time()) + filename2
             path = filename
