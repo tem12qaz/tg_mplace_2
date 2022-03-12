@@ -731,10 +731,13 @@ async def listen_handler(message: types.Message):
                     )
                 except:
                     pass
-            await bot.send_message(
-                user.telegram_id,
-                message.text
-            )
+            try:
+                await bot.send_message(
+                    user.telegram_id,
+                    message.text
+                )
+            except:
+                pass
         user.state = ''
         await user.save()
         await message.answer(
