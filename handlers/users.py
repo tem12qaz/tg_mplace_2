@@ -1,6 +1,7 @@
 import io
 import os
 import asyncio
+import traceback
 
 from aiogram import types
 from aiogram.dispatcher.filters import CommandStart, CommandHelp
@@ -659,6 +660,7 @@ async def listen_handler(message: types.Message):
             user.state = f'create_bid_{bid.id}'
             await user.save()
             if not form.field2:
+                shop = await form.shop
                 await send_deal(bid)
                 return
 
@@ -729,7 +731,8 @@ async def listen_handler(message: types.Message):
                         user.telegram_id,
                         photo=photo.source
                     )
-                except:
+                except Exception as e:
+                    print(traceback.format_exc())
                     pass
             try:
                 await bot.send_message(
@@ -924,11 +927,11 @@ async def listen_handler(message: types.Message):
             return
         if field == 'name':
             message = ADMIN_EDIT_SHOP_NAME_MESSAGE.format(
-                name=message.text, old_name=shop.name
+                name=message.text, old_name=shop.name, user=user.username
             )
         elif field == 'description':
             message = ADMIN_EDIT_SHOP_DESCRIPTION_MESSAGE.format(
-                description=message.text, old_description=shop.description
+                description=message.text, old_description=shop.description, user=user.username
             )
         else:
             return
@@ -1071,7 +1074,7 @@ async def handle_photo(message: types.Message):
             CHANNEL,
             photo=photo_binary,
             caption=ADMIN_CREATE_SHOP_MESSAGE.format(
-                name=shop.name, description=shop.description
+                name=shop.name, description=shop.description, user=user.username
             ),
             reply_markup=get_admin_shop_keyboard(shop)
         )
@@ -1099,7 +1102,7 @@ async def handle_photo(message: types.Message):
         await bot.send_photo(
             CHANNEL,
             photo=photo_binary,
-            caption=ADMIN_EDIT_SHOP_PHOTO_MESSAGE,
+            caption=ADMIN_EDIT_SHOP_PHOTO_MESSAGE.format(user=user.username),
             reply_markup=get_admin_edit_shop_keyboard(shop, 'photo')
         )
 
@@ -1169,7 +1172,7 @@ async def handle_docs(message: types.Message):
             CHANNEL,
             photo=photo_binary,
             caption=ADMIN_CREATE_SHOP_MESSAGE.format(
-                name=shop.name, description=shop.description
+                name=shop.name, description=shop.description, user=user.username
             ),
             reply_markup=get_admin_shop_keyboard(shop)
         )
@@ -1197,7 +1200,7 @@ async def handle_docs(message: types.Message):
         await bot.send_photo(
             CHANNEL,
             photo=photo_binary,
-            caption=ADMIN_EDIT_SHOP_PHOTO_MESSAGE,
+            caption=ADMIN_EDIT_SHOP_PHOTO_MESSAGE.format(user=user.username),
             reply_markup=get_admin_edit_shop_keyboard(shop, 'photo')
         )
 
