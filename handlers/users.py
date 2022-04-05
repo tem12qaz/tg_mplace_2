@@ -1,12 +1,14 @@
 import io
 import os
 import asyncio
+import traceback
 
 from aiogram import types
 from aiogram.dispatcher.filters import CommandStart, CommandHelp
-from aiogram.types import InputMediaPhoto, InputFile
+from aiogram.types import InputMediaPhoto, InputFile, KeyboardButton, ReplyKeyboardMarkup
 from parse import parse
 
+from data.buttons import MAIN_MENU_BUTTON
 from data.config import FLOOD_RATE, ADMIN_ID, ADMINS, CHANNEL
 from db.models import TelegramUser, Shop, Product, Photo, Deal, Review, Category, CategoryShop, ServiceCategory, Form, \
     Bid, Service
@@ -34,9 +36,15 @@ async def bot_start(message: types.Message):
         user = await TelegramUser.create(
             telegram_id=message.from_user.id, username=message.from_user.username
         )
+        menu_button = KeyboardButton(MAIN_MENU_BUTTON)
+
+        main_keyboard = ReplyKeyboardMarkup()
+        main_keyboard.add(menu_button)
+
         await bot.send_photo(
             user.telegram_id,
             photo=open('logo.jpg', 'rb'),
+            reply_markup=main_keyboard
         )
         await message.answer(
             START_MESSAGE,
@@ -48,7 +56,7 @@ async def bot_start(message: types.Message):
 
     await message.answer(
         MAIN_MENU_MESSAGE,
-        reply_markup=await get_start_keyboard(user)
+        reply_markup=await get_start_keyboard(user),
     )
 
 
@@ -462,6 +470,12 @@ async def listen_handler(message: types.Message):
     if user is None:
         return
 
+    if message.text == MAIN_MENU_BUTTON:
+        await message.answer(
+            MAIN_MENU_MESSAGE,
+            reply_markup=await get_start_keyboard(user),
+        )
+
     if user.state is None:
         await message.delete()
 
@@ -701,21 +715,19 @@ async def listen_handler(message: types.Message):
 
     elif 'mail' in user.state:
         users = await TelegramUser.all()
-        photos = []
         if '_' in user.state:
             photo = await Photo.get_or_none(id=int(user.state.replace('mail_', '')))
             if photo is None:
                 user.state = ''
+                await user.save()
 
         for user in users:
             if '_' in user.state:
-                try:
-                    await bot.send_photo(
-                        user.telegram_id,
-                        photo=photo.source
-                    )
-                except:
-                    pass
+                await bot.send_photo(
+                    user.telegram_id,
+                    photo=photo.source
+                )
+
             await bot.send_message(
                 user.telegram_id,
                 message.text
@@ -1062,8 +1074,9 @@ async def handle_photo(message: types.Message):
         if len(user.state.split('_')) > 2:
             await message.delete()
             return
-        photo = await Photo.create(source=photo_binary)
 
+        photo = await Photo.create(source=photo_binary)
+        print(photo.id)
         user.state = user.state + '_' + str(photo.id)
         await user.save()
         return
