@@ -4,6 +4,7 @@ import asyncio
 import traceback
 
 from aiogram import types
+from aiogram.utils.exceptions import BotBlocked
 from aiogram.dispatcher.filters import CommandStart, CommandHelp
 from aiogram.types import InputMediaPhoto, InputFile, KeyboardButton, ReplyKeyboardMarkup
 from parse import parse
@@ -746,16 +747,21 @@ async def listen_handler(message: types.Message):
                 await user.save()
 
         for user in users:
-            if '_' in user.state:
-                await bot.send_photo(
-                    user.telegram_id,
-                    photo=photo.source
-                )
+            try:
+                if '_' in user.state:
+                    await bot.send_photo(
+                        user.telegram_id,
+                        photo=photo.source
+                    )
 
-            await bot.send_message(
-                user.telegram_id,
-                message.text
-            )
+                await bot.send_message(
+                    user.telegram_id,
+                    message.text
+                )
+            except BotBlocked:
+                pass
+            except Exception as e:
+                print(traceback.format_exc())
         user.state = ''
         await user.save()
         await message.answer(
