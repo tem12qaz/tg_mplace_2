@@ -740,6 +740,7 @@ async def listen_handler(message: types.Message):
     elif 'mail' in user.state:
         users = await TelegramUser.all()
         photos = []
+        print(user.state)
         if '_' in user.state:
             photo = await Photo.get_or_none(id=int(user.state.replace('mail_', '')))
             if photo is None:
