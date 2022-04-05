@@ -32,15 +32,16 @@ from loader import dp, bot
 @dp.throttled(rate=FLOOD_RATE)
 async def bot_start(message: types.Message):
     user = await TelegramUser.get_or_none(telegram_id=message.from_user.id)
+
+    menu_button = KeyboardButton(MAIN_MENU_BUTTON)
+
+    main_keyboard = ReplyKeyboardMarkup()
+    main_keyboard.add(menu_button)
+
     if user is None:
         user = await TelegramUser.create(
             telegram_id=message.from_user.id, username=message.from_user.username
         )
-        menu_button = KeyboardButton(MAIN_MENU_BUTTON)
-
-        main_keyboard = ReplyKeyboardMarkup()
-        main_keyboard.add(menu_button)
-
         await bot.send_photo(
             user.telegram_id,
             photo=open('logo.jpg', 'rb'),
@@ -53,6 +54,11 @@ async def bot_start(message: types.Message):
         return
 
     await check_creating(user)
+
+    await message.answer(
+        MAIN_MENU_MESSAGE,
+        reply_markup=main_keyboard
+    )
 
     await message.answer(
         MAIN_MENU_MESSAGE,
