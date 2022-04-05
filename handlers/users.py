@@ -743,20 +743,21 @@ async def listen_handler(message: types.Message):
         print(user.state)
         if '_' in user.state:
             photo = await Photo.get_or_none(id=int(user.state.replace('mail_', '')))
+            print(photo)
             if photo is None:
                 user.state = ''
                 await user.save()
 
-        for user in users:
+        for user_ in users:
             try:
-                if '_' in user.state:
+                if '_' in user_.state:
                     await bot.send_photo(
-                        user.telegram_id,
+                        user_.telegram_id,
                         photo=photo.source
                     )
 
                 await bot.send_message(
-                    user.telegram_id,
+                    user_.telegram_id,
                     message.text
                 )
             except BotBlocked:
@@ -1107,7 +1108,6 @@ async def handle_photo(message: types.Message):
             return
 
         photo = await Photo.create(source=photo_binary)
-        print(photo.id)
         user.state = user.state + '_' + str(photo.id)
         await user.save()
         return
