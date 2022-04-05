@@ -35,7 +35,7 @@ async def bot_start(message: types.Message):
 
     menu_button = KeyboardButton(MAIN_MENU_BUTTON)
 
-    main_keyboard = ReplyKeyboardMarkup()
+    main_keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
     main_keyboard.add(menu_button)
 
     if user is None:
@@ -484,6 +484,7 @@ async def listen_handler(message: types.Message):
             MAIN_MENU_MESSAGE,
             reply_markup=await get_start_keyboard(user),
         )
+        return
 
     if user.state is None:
         await message.delete()
